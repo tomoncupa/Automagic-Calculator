@@ -1,0 +1,1170 @@
+<title>Automagic Fitness Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f1f4f3; --surface:#ffffff; --surface-2:#e7ecea; --surface-3:#dde4e1;
+  --ink:#131d1a; --ink-2:#55655f; --ink-3:#7c8c85;
+  --line:#d2dad7; --line-2:#bcc7c3;
+  --pine:#0f5d4c; --pine-ink:#0b4a3c; --pine-soft:#e0efe9;
+  --good:#2e7d52; --warn:#9c6205; --warn-soft:#fbeed6;
+  --bad:#b5342a; --bad-soft:#f8e3e0;
+  --mp:#0f5d4c; --mc:#2f6ea8; --mf:#9c6205; --onbar:#ffffff;
+  --shadow:0 1px 2px rgba(19,29,26,.06), 0 8px 24px -16px rgba(19,29,26,.28);
+  --lift:0 2px 6px rgba(19,29,26,.09), 0 20px 44px -24px rgba(19,29,26,.4);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d1412; --surface:#151e1b; --surface-2:#1d2724; --surface-3:#25322e;
+    --ink:#e4ebe8; --ink-2:#97a8a1; --ink-3:#76887f;
+    --line:#27332f; --line-2:#35443f;
+    --pine:#4fb397; --pine-ink:#79cbb3; --pine-soft:#13312a;
+    --good:#5fbd8a; --warn:#e0a446; --warn-soft:#33260f;
+    --bad:#e0796a; --bad-soft:#331a16;
+    --mp:#3f9e85; --mc:#5f96d0; --mf:#cf9438; --onbar:#0d1412;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+    --lift:0 2px 6px rgba(0,0,0,.5), 0 20px 44px -24px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d1412; --surface:#151e1b; --surface-2:#1d2724; --surface-3:#25322e;
+  --ink:#e4ebe8; --ink-2:#97a8a1; --ink-3:#76887f;
+  --line:#27332f; --line-2:#35443f;
+  --pine:#4fb397; --pine-ink:#79cbb3; --pine-soft:#13312a;
+  --good:#5fbd8a; --warn:#e0a446; --warn-soft:#33260f;
+  --bad:#e0796a; --bad-soft:#331a16;
+  --mp:#3f9e85; --mc:#5f96d0; --mf:#cf9438; --onbar:#0d1412;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+  --lift:0 2px 6px rgba(0,0,0,.5), 0 20px 44px -24px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Public Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1240px; margin:0 auto; padding-inline:16px; padding-block:0 60px}
+h1,h2,h3{font-family:"Oswald","Public Sans",sans-serif; font-weight:600; letter-spacing:.01em; text-wrap:balance; margin:0}
+.mono,td.n,.tile b,.vval{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace; font-variant-numeric:tabular-nums}
+.eyebrow{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3); margin:0 0 10px}
+
+header.mast{border-bottom:1px solid var(--line); padding-block:30px 24px; margin-bottom:26px}
+header.mast h1{font-size:clamp(30px,5.4vw,46px); line-height:1.02; text-transform:uppercase}
+header.mast h1 span{color:var(--pine)}
+.tagline{color:var(--ink-2); max-width:56ch; margin:12px 0 0}
+.masthead-row{display:flex; flex-wrap:wrap; gap:18px 28px; align-items:flex-end; justify-content:space-between}
+.getlist{display:flex; flex-direction:column; gap:7px; margin:0; padding:0; list-style:none; font-size:13px; color:var(--ink-2)}
+.getlist li{display:flex; gap:9px; align-items:baseline}
+.getlist .tick{color:var(--pine); font-weight:700; flex:none}
+.chip{display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:600;
+  padding:5px 11px; border-radius:999px; background:var(--pine-soft); color:var(--pine-ink)}
+
+.cols{display:grid; grid-template-columns:352px minmax(0,1fr); gap:28px; align-items:start}
+@media (max-width:920px){ .cols{grid-template-columns:1fr; gap:22px} }
+
+.intake{position:sticky; top:16px; background:var(--surface); border:1px solid var(--line);
+  border-radius:4px; box-shadow:var(--shadow); overflow:hidden}
+@media (max-width:920px){ .intake{position:static} }
+.intake-hd{padding:13px 16px; border-bottom:1px solid var(--line); background:var(--surface-2)}
+.intake-hd h2{font-size:14px; text-transform:uppercase; letter-spacing:.09em}
+.intake-body{padding:16px; display:flex; flex-direction:column; gap:20px}
+@media (min-width:921px){ .intake-body{max-height:calc(100vh - 150px); overflow-y:auto} }
+fieldset{border:0; padding:0; margin:0; display:flex; flex-direction:column; gap:11px}
+legend{padding:0; font-family:"IBM Plex Mono",monospace; font-size:11px;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--pine); font-weight:500}
+.field{display:flex; flex-direction:column; gap:5px; min-width:0}
+.field > label{font-size:12.5px; font-weight:600; color:var(--ink-2)}
+.row2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+input[type="number"],input[type="email"],input[type="text"],select{
+  width:100%; font-family:"IBM Plex Mono",monospace; font-size:14px;
+  padding:9px 10px; border:1px solid var(--line-2); border-radius:3px;
+  background:var(--surface); color:var(--ink); appearance:none}
+input[type="email"],input[type="text"]{font-family:"Public Sans",sans-serif}
+select{font-family:"Public Sans",sans-serif; padding-right:28px;
+  background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
+  background-position:calc(100% - 15px) 53%, calc(100% - 10px) 53%;
+  background-size:5px 5px,5px 5px; background-repeat:no-repeat}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--pine); outline-offset:2px}
+.hint{font-size:11.5px; color:var(--ink-3); line-height:1.45; margin:0}
+.seg{display:flex; border:1px solid var(--line-2); border-radius:3px; overflow:hidden}
+.seg button{flex:1; font-family:inherit; font-size:12.5px; font-weight:600; padding:7px 4px; border:0;
+  cursor:pointer; background:var(--surface); color:var(--ink-2); border-right:1px solid var(--line-2)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--pine); color:var(--bg)}
+.cta{width:100%; font-family:"Oswald",sans-serif; font-size:16px; font-weight:600; letter-spacing:.09em;
+  text-transform:uppercase; padding:12px; border:0; border-radius:3px; background:var(--pine);
+  color:var(--bg); cursor:pointer}
+.cta:hover{background:var(--pine-ink)}
+.cta[disabled]{opacity:.55; cursor:progress}
+.ghost{width:100%; font-family:inherit; font-size:13px; font-weight:600; padding:9px; border:1px solid var(--line-2);
+  border-radius:3px; background:var(--surface); color:var(--ink-2); cursor:pointer}
+.ghost:hover{background:var(--surface-2)}
+
+.plan{display:flex; flex-direction:column; gap:24px; min-width:0}
+section.card{background:var(--surface); border:1px solid var(--line); border-radius:4px; box-shadow:var(--shadow)}
+.card-hd{display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; padding:15px 18px; border-bottom:1px solid var(--line)}
+.card-hd h2{font-size:17px; text-transform:uppercase; letter-spacing:.06em}
+.card-hd .sub{font-size:12.5px; color:var(--ink-3)}
+.card-hd .lock{margin-left:auto; font-family:"IBM Plex Mono",monospace; font-size:10.5px;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--warn); background:var(--warn-soft);
+  padding:3px 8px; border-radius:2px; white-space:nowrap}
+.card-bd{padding:18px; display:flex; flex-direction:column; gap:16px}
+.tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(152px,1fr)); gap:1px; background:var(--line)}
+.tile{background:var(--surface); padding:16px 18px; display:flex; flex-direction:column; gap:2px}
+.tile b{font-size:27px; font-weight:500; line-height:1.15; letter-spacing:-.015em}
+.tile b small{font-size:13px; color:var(--ink-3); font-weight:400; letter-spacing:0}
+.tile .k{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3)}
+.tile .d{font-size:12px; color:var(--ink-2); line-height:1.4; margin-top:2px}
+.tile.lead b{color:var(--pine)}
+
+.macrobar{display:flex; height:34px; border-radius:3px; overflow:hidden}
+.macrobar div{display:flex; align-items:center; justify-content:center; font-family:"IBM Plex Mono",monospace;
+  font-size:11px; color:var(--onbar); min-width:0; overflow:hidden; white-space:nowrap}
+.mlegend{display:grid; grid-template-columns:repeat(auto-fit,minmax(168px,1fr)); gap:14px}
+.mlegend .m{display:flex; gap:11px; align-items:flex-start}
+.swatch{width:9px; height:40px; border-radius:2px; flex:none; margin-top:3px}
+.m .mk{font-size:12px; color:var(--ink-2); font-weight:600}
+.m .mv{font-family:"IBM Plex Mono",monospace; font-size:19px; line-height:1.25}
+.m .mn{font-size:11.5px; color:var(--ink-3); line-height:1.4}
+
+table{width:100%; border-collapse:collapse; font-size:13.5px}
+.scroll-x{overflow-x:auto}
+th{text-align:left; font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.11em;
+  text-transform:uppercase; color:var(--ink-3); font-weight:500; padding:0 10px 7px 0; border-bottom:1px solid var(--line); white-space:nowrap}
+td{padding:9px 10px 9px 0; border-bottom:1px solid var(--line); vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right; padding-right:0; white-space:nowrap}
+td.n{color:var(--ink-2)}
+.exname{font-weight:600}
+.exmusc{font-size:11.5px; color:var(--ink-3)}
+.badge{display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.08em;
+  text-transform:uppercase; padding:2px 6px; border-radius:2px; background:var(--surface-3); color:var(--ink-2)}
+.badge.key{background:var(--pine-soft); color:var(--pine-ink)}
+.badge.free{background:var(--pine); color:var(--bg)}
+
+.days{display:grid; grid-template-columns:repeat(auto-fit,minmax(318px,1fr)); gap:1px; background:var(--line)}
+.day{background:var(--surface); padding:16px 18px}
+.day.locked{background:var(--surface)}
+.day-hd{display:flex; align-items:baseline; justify-content:space-between; gap:10px}
+.day-hd h3{font-size:15px; text-transform:uppercase; letter-spacing:.06em}
+.day-hd .dn{font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--ink-3); white-space:nowrap}
+.day-focus{font-size:12px; color:var(--ink-3); margin:2px 0 10px}
+
+/* locked skeleton rows — no real content is placed in the DOM behind a blur */
+.skrow{display:grid; grid-template-columns:minmax(0,1fr) 54px 24px; gap:12px; align-items:center;
+  padding:11px 0; border-bottom:1px solid var(--line)}
+.skrow:last-child{border-bottom:0}
+.sk{height:10px; border-radius:2px; background:var(--surface-3)}
+.sk.s2{height:8px; background:var(--surface-2); margin-top:5px}
+.locknote{display:flex; align-items:center; gap:8px; margin-top:12px; font-size:12px; color:var(--ink-3)}
+
+.vol{display:flex; flex-direction:column; gap:10px}
+.vrow{display:grid; grid-template-columns:96px minmax(0,1fr) 58px; gap:12px; align-items:center; font-size:13px}
+.vtrack{position:relative; height:18px; background:var(--surface-3); border-radius:2px; overflow:hidden}
+.vband{position:absolute; top:0; bottom:0; background:var(--pine-soft)}
+.vfill{position:absolute; top:4px; bottom:4px; left:0; border-radius:2px}
+.vval{font-size:12px; text-align:right; color:var(--ink-2)}
+.vkey{display:flex; flex-wrap:wrap; gap:6px 16px; font-size:11.5px; color:var(--ink-3)}
+.vkey span{display:inline-flex; align-items:center; gap:6px}
+.vkey i{width:9px; height:9px; border-radius:2px; display:inline-block; flex:none}
+
+ul.tight{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:8px}
+ul.tight li::marker{color:var(--pine)}
+.split{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:20px}
+.split h4{margin:0 0 8px; font-size:12px; font-family:"IBM Plex Mono",monospace; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--ink-3); font-weight:500}
+.note{display:flex; gap:10px; padding:12px 14px; border-radius:3px; background:var(--surface-2);
+  font-size:13px; line-height:1.5; color:var(--ink-2)}
+.note.warn{background:var(--warn-soft); color:var(--warn)}
+.note.bad{background:var(--bad-soft); color:var(--bad)}
+.note .ic{flex:none}
+.milestones{display:flex; flex-direction:column}
+.ms{display:grid; grid-template-columns:82px minmax(0,1fr); gap:16px; padding:13px 0; border-bottom:1px solid var(--line)}
+.ms:first-child{padding-top:0}
+.ms:last-child{border-bottom:0; padding-bottom:0}
+.ms .wk{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--pine); padding-top:2px}
+.ms h4{margin:0 0 3px; font-size:13.5px; font-weight:700}
+.ms p{margin:0; font-size:13px; color:var(--ink-2)}
+svg.chart{display:block; width:100%; height:auto; max-width:100%}
+
+/* ---------- the capture card ---------- */
+.gate{border:1.5px solid var(--pine); border-radius:4px; background:var(--surface); box-shadow:var(--lift); overflow:hidden}
+.gate-bd{padding:24px 22px; display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr); gap:26px}
+@media (max-width:760px){ .gate-bd{grid-template-columns:1fr; gap:20px; padding:20px 18px} }
+.gate h2{font-size:21px; text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px}
+.gate p.lede{margin:0 0 14px; color:var(--ink-2); font-size:14px}
+.gate .unlocks{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:8px; font-size:13.5px}
+.gate .unlocks li{display:flex; gap:9px; align-items:baseline}
+.gate .unlocks .tick{color:var(--pine); font-weight:700; flex:none}
+.gform{display:flex; flex-direction:column; gap:11px}
+.consent{display:flex; gap:9px; align-items:flex-start; font-size:12.5px; color:var(--ink-2); line-height:1.45}
+.consent input{width:16px; height:16px; flex:none; margin:2px 0 0; accent-color:var(--pine)}
+.promise{font-size:11.5px; color:var(--ink-3); line-height:1.5; margin:0}
+.err{font-size:12.5px; color:var(--bad); margin:0; font-weight:600}
+.gate.done{border-color:var(--line)}
+.done-hd{display:flex; gap:10px; align-items:center; padding:18px 22px; background:var(--pine-soft); color:var(--pine-ink)}
+.done-hd h2{font-size:17px; margin:0}
+
+footer.foot{margin-top:32px; padding-top:18px; border-top:1px solid var(--line); font-size:12.5px;
+  color:var(--ink-3); max-width:78ch; line-height:1.6}
+footer.foot a{color:var(--ink-2)}
+@media (prefers-reduced-motion:reduce){ *{animation:none!important; transition:none!important} }
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <div class="masthead-row">
+      <div>
+        <p class="eyebrow">Free · No account · About 60 seconds</p>
+        <h1>Automagic<br><span>Fitness Plan</span></h1>
+        <p class="tagline">Twelve fields about you. Out comes your calorie target, your macros, and a training week
+          with real sets, reps and progression rules — built around the days and equipment you actually have.</p>
+      </div>
+      <ul class="getlist">
+        <li><span class="tick">✓</span><span>Energy and macro targets from your own numbers, not a chart</span></li>
+        <li><span class="tick">✓</span><span>A training split matched to your days, kit and experience</span></li>
+        <li><span class="tick">✓</span><span>The progression rules that keep it working past week three</span></li>
+        <li><span class="tick">✓</span><span><span class="chip">Nothing to install, nothing to pay</span></span></li>
+      </ul>
+    </div>
+  </header>
+
+  <div class="cols">
+    <form class="intake" id="form" autocomplete="off">
+      <div class="intake-hd"><h2>Your biodata</h2></div>
+      <div class="intake-body">
+
+        <fieldset>
+          <legend>About you</legend>
+          <div class="field">
+            <label for="units">Units</label>
+            <div class="seg" id="units" role="group" aria-label="Units">
+              <button type="button" id="unitMetric" data-units="metric" aria-pressed="true">Metric (kg/cm)</button>
+              <button type="button" id="unitImperial" data-units="imperial" aria-pressed="false">Imperial (lb/ft)</button>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="sex">Sex at birth</label>
+              <select id="sex"><option value="male">Male</option><option value="female">Female</option></select>
+            </div>
+            <div class="field">
+              <label for="age">Age</label>
+              <input type="number" id="age" min="12" max="95" step="1" value="34">
+            </div>
+          </div>
+          <p class="hint">Sex and age feed the Mifflin–St Jeor equation. Add a body-fat percentage and a better equation replaces it.</p>
+          <div class="field" id="hMetric">
+            <label for="heightCm">Height (cm)</label>
+            <input type="number" id="heightCm" min="120" max="230" step="1" value="178">
+          </div>
+          <div class="row2" id="hImperial" hidden>
+            <div class="field">
+              <label for="heightFt">Height (ft)</label>
+              <input type="number" id="heightFt" min="3" max="7" step="1" value="5">
+            </div>
+            <div class="field">
+              <label for="heightIn">and (in)</label>
+              <input type="number" id="heightIn" min="0" max="11" step="1" value="10">
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="weight">Weight (<span id="wUnit">kg</span>)</label>
+              <input type="number" id="weight" min="30" max="400" step="0.1" value="84">
+            </div>
+            <div class="field">
+              <label for="bodyfat">Body fat % <span style="font-weight:400;color:var(--ink-3)">opt.</span></label>
+              <input type="number" id="bodyfat" min="3" max="65" step="0.5" placeholder="—">
+            </div>
+          </div>
+          <div class="field">
+            <label for="activity">Daily activity, training included</label>
+            <select id="activity">
+              <option value="1.2">Sedentary — desk job, under 5,000 steps</option>
+              <option value="1.375">Lightly active — 5–8k steps, some training</option>
+              <option value="1.55" selected>Moderately active — 8–12k steps, regular training</option>
+              <option value="1.725">Very active — 12k+ steps or a physical job</option>
+              <option value="1.9">Extremely active — manual labour plus hard training</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Your goal</legend>
+          <div class="field">
+            <label for="goal">What you want</label>
+            <select id="goal">
+              <option value="lose" selected>Lose fat</option>
+              <option value="gain">Build muscle</option>
+              <option value="recomp">Recomposition — leaner at a similar weight</option>
+              <option value="maintain">Maintain and get fitter</option>
+            </select>
+          </div>
+          <div class="field" id="paceGroup">
+            <label for="pace">Pace</label>
+            <select id="pace">
+              <option value="steady">Steady — easiest to live with</option>
+              <option value="moderate" selected>Moderate — the usual recommendation</option>
+              <option value="fast">Aggressive — fastest defensible rate</option>
+            </select>
+          </div>
+          <div class="field" id="targetGroup">
+            <label for="targetWeight">Target weight (<span id="twUnit">kg</span>) <span style="font-weight:400;color:var(--ink-3)">opt.</span></label>
+            <input type="number" id="targetWeight" min="30" max="400" step="0.1" value="76">
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Your training</legend>
+          <div class="field">
+            <label for="exp">Lifting experience</label>
+            <select id="exp">
+              <option value="beginner">Beginner — under 12 months consistent</option>
+              <option value="intermediate" selected>Intermediate — 1–4 years, lifts still climbing</option>
+              <option value="advanced">Advanced — 4+ years, progress comes slowly</option>
+            </select>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="days">Days / week</label>
+              <select id="days">
+                <option value="2">2 days</option><option value="3">3 days</option>
+                <option value="4" selected>4 days</option><option value="5">5 days</option>
+                <option value="6">6 days</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="session">Session</label>
+              <select id="session">
+                <option value="30">30 min</option><option value="45">45 min</option>
+                <option value="60" selected>60 min</option><option value="75">75+ min</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="equip">Equipment</label>
+            <select id="equip">
+              <option value="gym" selected>Full gym — barbells, machines, cables</option>
+              <option value="db">Home — dumbbells and a bench</option>
+              <option value="bw">Bodyweight and resistance bands</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <div class="field">
+          <button type="submit" class="cta" id="build">Build my plan</button>
+          <button type="button" class="ghost" id="copy">Copy plan as text</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="plan" id="plan"></div>
+  </div>
+
+  <footer class="foot">
+    <strong>This is general fitness information, not medical advice.</strong> The numbers come from population-average
+    equations — Mifflin–St Jeor, or Katch–McArdle when you supply a body-fat percentage — and every individual sits
+    somewhere either side of the average. Treat the calorie target as a starting hypothesis and let two to three weeks
+    of real scale data correct it. Talk to a doctor first if you are pregnant or breastfeeding, managing a cardiac,
+    metabolic or eating disorder, taking medication that affects appetite, weight or blood sugar, or returning from
+    injury or surgery.
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============================================================
+     CONFIG — the only block you edit to take this live.
+     See README.md for per-provider values.
+     ============================================================ */
+  var CONFIG = {
+    /* Your list provider's form action URL. Leave empty to run in
+       demo mode: the gate unlocks and the lead is logged to the
+       console instead of being sent anywhere. */
+    endpoint: "",
+
+    /* Field names your provider expects. Kit/ConvertKit use
+       email_address + first_name; Mailchimp uses EMAIL + FNAME. */
+    fields: { email: "email_address", name: "first_name" },
+
+    /* Most embedded-form endpoints do not return CORS headers.
+       true  = fire-and-forget (no-cors); we cannot read the response,
+               so we unlock optimistically. Correct for Kit/Mailchimp.
+       false = read the response and only unlock on a 2xx. Use this
+               if you post to your own API. */
+    opaque: true,
+
+    /* Shown after a successful submit. Set to false if your list is
+       single opt-in and no confirmation email goes out. */
+    doubleOptIn: true,
+
+    /* What you promise on the form. Keep it true. */
+    promise: "One email a week: one idea you can use in your next session.",
+    privacyUrl: ""   /* optional; renders a Privacy link when set */
+  };
+
+  /* ---------- exercise library: pattern -> equipment variants ---------- */
+  var LIB = {
+    squat:      {m:'Quads',     key:1, gym:'Barbell Back Squat',        db:'Goblet Squat',                  bw:'Bulgarian Split Squat'},
+    hinge:      {m:'Hamstrings',key:1, gym:'Barbell Romanian Deadlift', db:'Dumbbell Romanian Deadlift',    bw:'Single-Leg Romanian Deadlift'},
+    lunge:      {m:'Quads',     key:1, gym:'Walking Lunge',             db:'Dumbbell Reverse Lunge',        bw:'Reverse Lunge'},
+    glute:      {m:'Glutes',    key:0, gym:'Barbell Hip Thrust',        db:'Dumbbell Hip Thrust',           bw:'Single-Leg Glute Bridge'},
+    hamstring:  {m:'Hamstrings',key:0, gym:'Seated Leg Curl',           db:'Dumbbell Stiff-Leg Deadlift',   bw:'Sliding Leg Curl'},
+    calf:       {m:'Calves',    key:0, gym:'Standing Calf Raise',       db:'Dumbbell Calf Raise',           bw:'Single-Leg Calf Raise'},
+    core:       {m:'Core',      key:0, gym:'Cable Crunch',              db:'Suitcase Carry',                bw:'Hollow-Body Hold'},
+    horizPush:  {m:'Chest',     key:1, gym:'Barbell Bench Press',       db:'Dumbbell Bench Press',          bw:'Push-Up'},
+    inclinePush:{m:'Chest',     key:1, gym:'Incline Barbell Press',     db:'Incline Dumbbell Press',        bw:'Feet-Elevated Push-Up'},
+    vertPush:   {m:'Shoulders', key:1, gym:'Standing Overhead Press',   db:'Seated Dumbbell Press',         bw:'Pike Push-Up'},
+    horizPull:  {m:'Back',      key:1, gym:'Barbell Row',               db:'Single-Arm Dumbbell Row',       bw:'Inverted Row'},
+    horizPull2: {m:'Back',      key:0, gym:'Seated Cable Row',          db:'Chest-Supported Dumbbell Row',  bw:'Band Seated Row'},
+    vertPull:   {m:'Back',      key:1, gym:'Pull-Up or Lat Pulldown',   db:'Dumbbell Pullover',             bw:'Pull-Up (band-assisted if needed)'},
+    delts:      {m:'Shoulders', key:0, gym:'Cable Lateral Raise',       db:'Dumbbell Lateral Raise',        bw:'Band Lateral Raise'},
+    rearDelt:   {m:'Shoulders', key:0, gym:'Reverse Pec Deck',          db:'Bent-Over Reverse Fly',         bw:'Band Face Pull'},
+    biceps:     {m:'Biceps',    key:0, gym:'EZ-Bar Curl',               db:'Dumbbell Curl',                 bw:'Band Curl'},
+    biceps2:    {m:'Biceps',    key:0, gym:'Incline Dumbbell Curl',     db:'Hammer Curl',                   bw:'Chin-Up'},
+    triceps:    {m:'Triceps',   key:0, gym:'Cable Triceps Pushdown',    db:'Overhead Dumbbell Extension',   bw:'Bench Dip'},
+    triceps2:   {m:'Triceps',   key:0, gym:'Skull Crusher',             db:'Dumbbell Skull Crusher',        bw:'Diamond Push-Up'}
+  };
+
+  var DAYTPL = {
+    fullA: {n:'Full Body A', f:'Squat and horizontal push emphasis', p:['squat','horizPush','vertPull','hinge','delts','triceps','core']},
+    fullB: {n:'Full Body B', f:'Hinge and vertical press emphasis',  p:['hinge','vertPush','horizPull','lunge','hamstring','biceps','core']},
+    fullC: {n:'Full Body C', f:'Single-leg work and arms',           p:['lunge','inclinePush','vertPull','hamstring','rearDelt','triceps','calf']},
+    upper: {n:'Upper',       f:'Chest, back, shoulders, arms',       p:['horizPush','vertPull','vertPush','horizPull','delts','biceps','triceps']},
+    lower: {n:'Lower',       f:'Quads, hamstrings, glutes, calves',  p:['squat','hinge','lunge','glute','hamstring','calf','core']},
+    push:  {n:'Push',        f:'Chest, shoulders, triceps',          p:['horizPush','vertPush','inclinePush','delts','triceps','triceps2','core']},
+    pull:  {n:'Pull',        f:'Back, rear delts, biceps',           p:['vertPull','horizPull','horizPull2','rearDelt','biceps','biceps2','core']},
+    legs:  {n:'Legs',        f:'Quads, hamstrings, glutes, calves',  p:['squat','hinge','lunge','glute','hamstring','calf','core']}
+  };
+
+  var SPLIT_NAME = {
+    2:'Two-day full body', 3:'Three-day full body', 3.5:'Push / Pull / Legs',
+    4:'Upper / Lower, twice through', 5:'Upper / Lower plus Push / Pull / Legs', 6:'Push / Pull / Legs, twice through'
+  };
+
+  var EX_PER_SESSION = {30:4, 45:5, 60:6, 75:7};
+  var PACE = {lose:{steady:0.40, moderate:0.65, fast:0.90}, gain:{steady:0.15, moderate:0.28, fast:0.42}};
+  var EXPMOD = {beginner:1.3, intermediate:1.0, advanced:0.7};
+  var GOAL_LABEL = {lose:'Fat loss', gain:'Muscle gain', recomp:'Recomposition', maintain:'Maintenance'};
+  var MUSC_ORDER = ['Chest','Back','Shoulders','Biceps','Triceps','Quads','Hamstrings','Glutes','Calves','Core'];
+
+  var $ = function(id){ return document.getElementById(id); };
+  var r0 = function(n){ return Math.round(n); };
+  var r1 = function(n){ return Math.round(n*10)/10; };
+  var fmt = function(n){ return r0(n).toLocaleString('en-GB'); };
+  var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); };
+
+  var state = {units:'metric', unlocked:false, submitting:false, gateError:'', justUnlocked:false};
+
+  /* ---------- read the form ---------- */
+  function read(){
+    var units = state.units;
+    var wRaw = parseFloat($('weight').value) || 0;
+    var weightKg = units === 'metric' ? wRaw : wRaw/2.2046226;
+    var heightCm;
+    if(units === 'metric'){
+      heightCm = parseFloat($('heightCm').value) || 0;
+    } else {
+      heightCm = ((parseFloat($('heightFt').value)||0)*12 + (parseFloat($('heightIn').value)||0)) * 2.54;
+    }
+    var tRaw = parseFloat($('targetWeight').value);
+    var targetKg = isNaN(tRaw) ? null : (units === 'metric' ? tRaw : tRaw/2.2046226);
+    var bf = parseFloat($('bodyfat').value);
+    return {
+      units: units, sex: $('sex').value, age: parseFloat($('age').value) || 0,
+      heightCm: heightCm, weightKg: weightKg,
+      bf: (isNaN(bf) || bf < 3 || bf > 65) ? null : bf,
+      activity: parseFloat($('activity').value),
+      goal: $('goal').value, pace: $('pace').value, targetKg: targetKg,
+      exp: $('exp').value, days: parseInt($('days').value, 10),
+      session: parseInt($('session').value, 10), equip: $('equip').value
+    };
+  }
+
+  var toDisp = function(kg, units){ return units === 'metric' ? kg : kg*2.2046226; };
+  var unitW  = function(units){ return units === 'metric' ? 'kg' : 'lb'; };
+
+  function bmrFor(s, weightKg){
+    if(s.bf) return 370 + 21.6 * (weightKg * (1 - s.bf/100));
+    return 10*weightKg + 6.25*s.heightCm - 5*s.age + (s.sex === 'male' ? 5 : -161);
+  }
+
+  /* ---------- energy and macros ---------- */
+  function energy(s){
+    var notes = [];
+    var bmr = bmrFor(s, s.weightKg);
+    var tdee = bmr * s.activity;
+    var method = s.bf ? 'Katch–McArdle (uses your lean mass)' : 'Mifflin–St Jeor';
+    var goal = s.goal;
+
+    if(s.age < 18){
+      notes.push({t:'bad', txt:'You are under 18, so this plan holds calories at maintenance and prescribes no deficit or surplus. Growing bodies need full energy intake, and body-composition goals at your age belong in a conversation with a doctor or a registered dietitian who can actually see you. The training week below is still appropriate — supervised, technique first, loads conservative.'});
+      goal = 'maintain';
+    }
+
+    var rateKg = 0, target = tdee;
+    if(goal === 'lose'){
+      rateKg = s.weightKg * PACE.lose[s.pace] / 100;
+      target = tdee - (rateKg * 7700 / 7);
+    } else if(goal === 'gain'){
+      rateKg = s.weightKg * PACE.gain[s.pace] / 100 * EXPMOD[s.exp];
+      target = tdee + (rateKg * 5500 / 7);
+    } else if(goal === 'recomp'){
+      target = tdee * 0.95;
+      rateKg = -(tdee - target) * 7 / 7700;
+    }
+
+    if(goal === 'lose'){
+      if(target < tdee * 0.75){
+        target = tdee * 0.75;
+        notes.push({t:'warn', txt:'That pace would need a deficit larger than 25% of your maintenance, which costs muscle and adherence out of proportion to the extra fat lost. Capped at 25%.'});
+      }
+      var floor = Math.max(bmr * 1.05, s.sex === 'male' ? 1500 : 1200);
+      if(target < floor){
+        target = floor;
+        notes.push({t:'warn', txt:'Raised to ' + fmt(floor) + ' kcal — a floor set just above your resting metabolic rate. Below that, an unsupervised plan starts trading away hormones and micronutrients.'});
+      }
+      rateKg = (tdee - target) * 7 / 7700;
+    }
+
+    var bmi = s.weightKg / Math.pow(s.heightCm/100, 2);
+    var lbm = s.bf ? s.weightKg * (1 - s.bf/100) : null;
+
+    var refKg = s.weightKg;
+    if(lbm) refKg = lbm;
+    else if(bmi > 27.5) refKg = 27.5 * Math.pow(s.heightCm/100, 2);
+
+    var cutting = (goal === 'lose' || goal === 'recomp');
+    var pPerKg = lbm ? (cutting ? 2.5 : 2.0) : (cutting ? 2.2 : 1.8);
+    var protein = r0(refKg * pPerKg);
+    var fat = r0(Math.max(refKg * 0.8, target * 0.22 / 9));
+    var carbs = r0((target - protein*4 - fat*9) / 4);
+    if(carbs < 60){
+      fat = r0(Math.max(refKg * 0.55, (target - protein*4 - 60*4) / 9));
+      carbs = r0((target - protein*4 - fat*9) / 4);
+    }
+    if(carbs < 0) carbs = 0;
+
+    return {
+      bmr:bmr, tdee:tdee, target:target, method:method, goal:goal, rateKg:rateKg,
+      bmi:bmi, lbm:lbm, notes:notes, protein:protein, fat:fat, carbs:carbs,
+      fibre: r0(target/1000 * 14),
+      waterTrain: (s.weightKg*35 + 600)/1000,
+      waterRest: (s.weightKg*35)/1000
+    };
+  }
+
+  /* ---------- training ---------- */
+  function buildWeek(s){
+    var keys;
+    if(s.days <= 2) keys = ['fullA','fullB'];
+    else if(s.days === 3) keys = (s.exp === 'beginner') ? ['fullA','fullB','fullC'] : ['push','pull','legs'];
+    else if(s.days === 4) keys = ['upper','lower','upper','lower'];
+    else if(s.days === 5) keys = ['upper','lower','push','pull','legs'];
+    else keys = ['push','pull','legs','push','pull','legs'];
+
+    var splitName = s.days === 3 ? (s.exp === 'beginner' ? SPLIT_NAME[3] : SPLIT_NAME[3.5]) : SPLIT_NAME[s.days];
+    var nEx = EX_PER_SESSION[s.session];
+    var seen = {}, days = [], vol = {};
+
+    keys.forEach(function(k, i){
+      seen[k] = (seen[k] || 0) + 1;
+      var variant = seen[k];
+      var repeated = keys.filter(function(x){ return x === k; }).length > 1;
+      var tpl = DAYTPL[k];
+      var pats = tpl.p.slice();
+      if(variant === 2) pats = pats.slice(1).concat(pats.slice(0,1));
+      pats = pats.slice(0, nEx);
+
+      var items = pats.map(function(p, j){
+        var e = LIB[p], isKey = !!e.key;
+        var sets = 3;
+        if(s.goal === 'gain' || s.goal === 'recomp') sets = isKey ? 4 : 3;
+        if(s.exp === 'beginner') sets = isKey ? 3 : 2;
+        if(s.exp === 'advanced' && j < 2) sets += 1;
+
+        var reps = isKey ? ((j === 0 && s.exp !== 'beginner') ? '5–8' : '6–10') : '10–15';
+        var rir = s.exp === 'beginner' ? 3 : (s.exp === 'advanced' ? 1 : 2);
+        if(s.goal === 'lose') rir += 1;
+
+        vol[e.m] = (vol[e.m] || 0) + sets;
+        return {name:e[s.equip], musc:e.m, sets:sets, reps:reps, rir:rir,
+                rest: isKey ? '2–3 min' : '60–90 s', isKey:isKey};
+      });
+
+      days.push({name: tpl.n + (repeated ? ' ' + (variant === 1 ? 'A' : 'B') : ''),
+                 focus: tpl.f, n: i + 1, items: items});
+    });
+
+    return {splitName:splitName, days:days, vol:vol, nEx:nEx};
+  }
+
+  /* ---------- projection ---------- */
+  function project(s, target, weeks){
+    var w = s.weightKg, pts = [{wk:0, w:w}], j;
+    for(var k = 1; k <= weeks; k++){
+      var delta = target - bmrFor(s, w) * s.activity;
+      var perWk = delta * 7 / (delta < 0 ? 7700 : 5500);
+      if(Math.abs(perWk) < 0.002) perWk = 0;
+      w = w + perWk;
+      pts.push({wk:k, w:w});
+      if(perWk === 0){ for(j = k+1; j <= weeks; j++) pts.push({wk:j, w:w}); break; }
+    }
+    return pts;
+  }
+
+  function weeksToTarget(s, target){
+    if(s.targetKg == null) return null;
+    var w = s.weightKg, dir = s.targetKg < w ? -1 : 1;
+    if(Math.abs(s.targetKg - w) < 0.2) return 0;
+    for(var k = 1; k <= 156; k++){
+      var delta = target - bmrFor(s, w) * s.activity;
+      var perWk = delta * 7 / (delta < 0 ? 7700 : 5500);
+      if(perWk * dir <= 0.002) return null;
+      w += perWk;
+      if(dir < 0 ? w <= s.targetKg : w >= s.targetKg) return k;
+    }
+    return null;
+  }
+
+  /* ---------- chart ---------- */
+  function chart(pts, s, targetKg){
+    var W = 760, H = 250, PL = 54, PR = 18, PT = 16, PB = 34;
+    var iw = W - PL - PR, ih = H - PT - PB, i;
+    var vals = pts.map(function(p){ return toDisp(p.w, s.units); });
+    if(targetKg != null) vals.push(toDisp(targetKg, s.units));
+    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+    var pad = Math.max((hi - lo) * 0.18, 1);
+    lo -= pad; hi += pad;
+    var maxWk = pts[pts.length-1].wk;
+    var X = function(wk){ return PL + (wk / maxWk) * iw; };
+    var Y = function(v){ return PT + (1 - (v - lo)/(hi - lo)) * ih; };
+
+    var ticks = [];
+    for(i = 0; i < 5; i++) ticks.push(lo + (hi - lo) * i/4);
+    var grid = ticks.map(function(t){
+      return '<line x1="'+PL+'" y1="'+Y(t).toFixed(1)+'" x2="'+(W-PR)+'" y2="'+Y(t).toFixed(1)+'" stroke="var(--line)" stroke-width="1"/>' +
+             '<text x="'+(PL-9)+'" y="'+(Y(t)+4).toFixed(1)+'" text-anchor="end" font-size="11" font-family="IBM Plex Mono, monospace" fill="var(--ink-3)">'+r1(t).toFixed(1)+'</text>';
+    }).join('');
+
+    var step = maxWk <= 8 ? 2 : (maxWk <= 20 ? 4 : (maxWk <= 40 ? 8 : 13));
+    var xlab = '';
+    for(i = 0; i <= maxWk; i += step){
+      xlab += '<text x="'+X(i).toFixed(1)+'" y="'+(H-12)+'" text-anchor="middle" font-size="11" font-family="IBM Plex Mono, monospace" fill="var(--ink-3)">'+i+'</text>';
+    }
+    xlab += '<text x="'+((PL+W-PR)/2).toFixed(1)+'" y="'+(H-0.5)+'" text-anchor="middle" font-size="10" font-family="IBM Plex Mono, monospace" letter-spacing="1.2" fill="var(--ink-3)">WEEKS</text>';
+
+    var d = pts.map(function(p, k){
+      return (k ? 'L' : 'M') + X(p.wk).toFixed(1) + ' ' + Y(toDisp(p.w, s.units)).toFixed(1);
+    }).join(' ');
+    var area = d + ' L' + X(maxWk).toFixed(1) + ' ' + (PT+ih).toFixed(1) + ' L' + X(0).toFixed(1) + ' ' + (PT+ih).toFixed(1) + ' Z';
+
+    var tline = '';
+    if(targetKg != null){
+      var ty = Y(toDisp(targetKg, s.units));
+      tline = '<line x1="'+PL+'" y1="'+ty.toFixed(1)+'" x2="'+(W-PR)+'" y2="'+ty.toFixed(1)+'" stroke="var(--warn)" stroke-width="1.5" stroke-dasharray="5 4"/>' +
+              '<text x="'+(W-PR)+'" y="'+(ty-7).toFixed(1)+'" text-anchor="end" font-size="11" font-family="IBM Plex Mono, monospace" fill="var(--warn)">target '+r1(toDisp(targetKg,s.units))+' '+unitW(s.units)+'</text>';
+    }
+    var last = pts[pts.length-1];
+    return '<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Projected body weight over '+maxWk+' weeks">' +
+      grid + xlab + tline +
+      '<path d="'+area+'" fill="var(--pine-soft)"/>' +
+      '<path d="'+d+'" fill="none" stroke="var(--pine)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '<circle cx="'+X(last.wk).toFixed(1)+'" cy="'+Y(toDisp(last.w,s.units)).toFixed(1)+'" r="4.5" fill="var(--pine)"/></svg>';
+  }
+
+  function volumeBlock(vol){
+    var LOW = 10, HIGH = 20, MAX = 28;
+    var rows = MUSC_ORDER.filter(function(m){ return vol[m]; }).map(function(m){
+      var v = vol[m];
+      var col = v < LOW ? 'var(--warn)' : (v > HIGH ? 'var(--bad)' : 'var(--good)');
+      var lbl = v < LOW ? 'below the productive range' : (v > HIGH ? 'above the productive range' : 'in the productive range');
+      return '<div class="vrow"><span>'+m+'</span>' +
+        '<span class="vtrack" role="img" aria-label="'+m+': '+v+' hard sets per week, '+lbl+'">' +
+          '<span class="vband" style="left:'+(LOW/MAX*100)+'%;width:'+((HIGH-LOW)/MAX*100)+'%"></span>' +
+          '<span class="vfill" style="width:'+Math.min(v/MAX*100,100)+'%;background:'+col+'"></span>' +
+        '</span><span class="vval">'+v+'</span></div>';
+    }).join('');
+    return '<div class="vol">' + rows + '</div>' +
+      '<div class="vkey"><span><i style="background:var(--pine-soft)"></i>10–20 sets: where the dose–response curve flattens in most of the literature</span>' +
+      '<span><i style="background:var(--good)"></i>in range</span><span><i style="background:var(--warn)"></i>light</span>' +
+      '<span><i style="background:var(--bad)"></i>heavy — only if recovery allows</span></div>';
+  }
+
+  function conditioning(s){
+    var steps = {lose:9500, recomp:9000, maintain:8000, gain:7000}[s.goal];
+    if(s.activity >= 1.725) steps = Math.max(steps, 12000);
+    var z2 = {lose:'2–3 sessions of 30–35 min', recomp:'2 sessions of 25–30 min',
+              maintain:'2 sessions of 25–30 min', gain:'2 sessions of 20 min'}[s.goal];
+    var hi  = {lose:'1 optional session: 8 × 30 s hard / 90 s easy, on a bike or rower',
+               recomp:'1 optional session: 6 × 30 s hard / 90 s easy',
+               maintain:'1 optional session: 6 × 30 s hard / 90 s easy',
+               gain:'Skip intervals — they compete with leg recovery'}[s.goal];
+    return {steps:steps, z2:z2, hi:hi};
+  }
+
+  function milestones(s, e){
+    var g = e.goal;
+    if(g === 'lose') return [
+      {wk:'Weeks 1–2', h:'A drop that is mostly not fat', p:'Expect 1–2 kg in the first fortnight. Most of it is glycogen and the water bound to it. It is not a sign the plan is working unusually well, and it is why week 3 often looks like a stall when it is not.'},
+      {wk:'Weeks 3–6', h:'The real rate shows up', p:'Average your weigh-ins across each week and compare week to week. If the seven-day average has not moved in two weeks, cut 150 kcal or add 1,500 steps — one change, then wait another two weeks.'},
+      {wk:'Weeks 7–10', h:'Lifts flatten, and that is fine', p:'Strength should hold, not climb. Holding your top sets at the same load in a deficit means you are keeping the muscle you are trying to keep.'},
+      {wk:'Weeks 11–16', h:'Diet break or push on', p:'Ten to sixteen weeks is about as long as most people hold a deficit well. Two weeks at maintenance costs very little total progress and buys back the appetite control and training quality you have been spending.'}
+    ];
+    if(g === 'gain') return [
+      {wk:'Weeks 1–3', h:'Weight moves before muscle does', p:'The first kilo is food volume, glycogen and water. Judge the surplus from week 4 onwards, not before.'},
+      {wk:'Weeks 4–8', h:'Check the rate, not the mirror', p:'You want roughly ' + r1(toDisp(e.rateKg, s.units)) + ' ' + unitW(s.units) + ' a week on the seven-day average. Faster than that is mostly fat; slower means adding 150–200 kcal.'},
+      {wk:'Weeks 9–16', h:'Waist as the brake', p:'Track your waist alongside your weight. If the waist is climbing faster than your lifts are, the surplus is too big.'},
+      {wk:'Weeks 17+', h:'Know when to stop', p:'Most people run a gaining phase until body fat is noticeably up — often 12–20 weeks — then hold at maintenance or cut back before continuing.'}
+    ];
+    if(g === 'recomp') return [
+      {wk:'Weeks 1–4', h:'The scale will not tell you much', p:'Recomposition trades fat for muscle at a similar weight, so weight is the wrong instrument. Photos in the same light, a waist measurement and your logbook are the instruments.'},
+      {wk:'Weeks 5–10', h:'Strength is the signal', p:'If your top sets are climbing while your waist holds or shrinks, it is working, whatever the scale says.'},
+      {wk:'Weeks 11–20', h:'Slow, and worth it', p:'Recomposition is the slowest route on paper and often the most sustainable in practice, because nothing about your eating has to feel extreme.'},
+      {wk:'Weeks 20+', h:'Pick a direction', p:'Once progress slows, most people get more from a focused 12-week gaining or cutting phase than from another year of the middle.'}
+    ];
+    return [
+      {wk:'Weeks 1–4', h:'Build the habit before the load', p:'Turning up for every session matters more right now than any set or rep. Set the bar at "I did the session", not "I beat last week".'},
+      {wk:'Weeks 5–12', h:'Strength climbs at maintenance', p:'You do not need a surplus to get stronger, especially in your first two years. Add load whenever you hit the top of a rep range on every set.'},
+      {wk:'Weeks 13+', h:'Re-run this', p:'Come back with a fresh weight and activity level. Maintenance calories move as your body and your habits do.'}
+    ];
+  }
+
+  /* ---------- gate ---------- */
+  function skeletonRows(n){
+    var out = '';
+    for(var i = 0; i < n; i++){
+      out += '<div class="skrow"><span><span class="sk" style="width:' + (58 + (i*13)%34) + '%"></span>' +
+             '<span class="sk s2" style="width:' + (26 + (i*9)%16) + '%;display:block"></span></span>' +
+             '<span class="sk"></span><span class="sk"></span></div>';
+    }
+    return out;
+  }
+
+  function gateCard(s, wk){
+    if(state.unlocked){
+      return '<section class="gate done"><div class="done-hd"><span aria-hidden="true">✓</span>' +
+        '<h2>You are on the list</h2></div><div class="card-bd">' +
+        (CONFIG.endpoint && CONFIG.doubleOptIn
+          ? '<div class="note"><span class="ic">✉</span><span><b>One thing left:</b> check your inbox and click the confirmation link. Nothing else sends until you do — that is your protection as much as ours.</span></div>'
+          : '') +
+        '<p style="margin:0;color:var(--ink-2);font-size:14px">' + esc(CONFIG.promise) + ' The whole plan below is yours — copy it out with the button in the panel, and re-run this page every four to six weeks. Your maintenance calories move as your weight does, and a plan built for the old number quietly stops working.</p>' +
+        '</div></section>';
+    }
+
+    var remaining = Math.max(wk.days.length - 1, 0);
+    return '<section class="gate"><div class="gate-bd">' +
+      '<div>' +
+        '<h2>The rest of your week is ready</h2>' +
+        '<p class="lede">Day 1 is above, in full, yours either way. Tell us where to send the rest:</p>' +
+        '<ul class="unlocks">' +
+          '<li><span class="tick">✓</span><span><b>' + (remaining === 1 ? 'Day 2' : 'Days 2–' + wk.days.length) + '</b> — every exercise, set, rep and rest interval</span></li>' +
+          '<li><span class="tick">✓</span><span><b>Your weekly hard sets</b> per muscle, checked against the productive range</span></li>' +
+          '<li><span class="tick">✓</span><span><b>Conditioning and step targets</b> that fit around the lifting instead of fighting it</span></li>' +
+          '<li><span class="tick">✓</span><span><b>The progression and deload rules</b> — the part that decides whether month three looks different from month one</span></li>' +
+          '<li><span class="tick">✓</span><span><b>Your week-by-week projection</b> and what to change when it stalls</span></li>' +
+        '</ul>' +
+      '</div>' +
+      '<form class="gform" id="gform" novalidate>' +
+        '<div class="field"><label for="leadName">First name <span style="font-weight:400;color:var(--ink-3)">optional</span></label>' +
+          '<input type="text" id="leadName" autocomplete="given-name" placeholder="Sam"></div>' +
+        '<div class="field"><label for="leadEmail">Email</label>' +
+          '<input type="email" id="leadEmail" autocomplete="email" required placeholder="you@example.com"></div>' +
+        '<label class="consent"><input type="checkbox" id="leadConsent">' +
+          '<span>Yes — send me the full plan and one training email a week. I can unsubscribe in one click.</span></label>' +
+        (state.gateError ? '<p class="err">' + esc(state.gateError) + '</p>' : '') +
+        '<button type="submit" class="cta" id="leadSubmit"' + (state.submitting ? ' disabled' : '') + '>' +
+          (state.submitting ? 'Sending…' : 'Unlock the full plan') + '</button>' +
+        '<p class="promise">' + esc(CONFIG.promise) + ' No spam, no sharing, no selling your address. Unsubscribe in one click' +
+          (CONFIG.privacyUrl ? ' — <a href="' + esc(CONFIG.privacyUrl) + '" target="_blank" rel="noopener">privacy policy</a>' : '') + '.</p>' +
+      '</form>' +
+    '</div></section>';
+  }
+
+  /* ---------- render ---------- */
+  var lastText = '';
+
+  function render(){
+    var s = read();
+    if(!(s.weightKg > 0) || !(s.heightCm > 0) || !(s.age > 0)){
+      $('plan').innerHTML = '<section class="card"><div class="card-bd"><div class="note warn">' +
+        '<span class="ic">▲</span><span>Fill in age, height and weight and your plan appears here.</span></div></div></section>';
+      return;
+    }
+    var e = energy(s), wk = buildWeek(s), cond = conditioning(s);
+    var u = unitW(s.units), locked = !state.unlocked, html = '';
+
+    e.notes.forEach(function(n){
+      html += '<section class="card"><div class="card-bd"><div class="note '+n.t+'"><span class="ic">▲</span><span>'+n.txt+'</span></div></div></section>';
+    });
+
+    /* --- FREE: your numbers --- */
+    var bmiCat = e.bmi < 18.5 ? 'underweight range' : e.bmi < 25 ? 'healthy range' : e.bmi < 30 ? 'overweight range' : 'obese range';
+    var dirWord = e.goal === 'lose' ? 'deficit' : (e.goal === 'gain' ? 'surplus' : 'adjustment');
+    var diff = Math.abs(e.tdee - e.target);
+    html += '<section class="card"><div class="card-hd"><h2>Your numbers</h2>' +
+      '<span class="sub">' + GOAL_LABEL[e.goal] + ' · ' + e.method + '</span>' +
+      '<span class="badge free">free</span></div><div class="tiles">' +
+      tile('Resting metabolic rate', fmt(e.bmr), 'kcal', 'What you would burn lying still all day.') +
+      tile('Maintenance (TDEE)', fmt(e.tdee), 'kcal', 'Resting rate × your activity multiplier of ' + s.activity + '.') +
+      tile('Daily target', fmt(e.target), 'kcal', diff < 20 ? 'Maintenance — no deficit or surplus.' : fmt(diff) + ' kcal ' + dirWord + ' a day.', true) +
+      tile('BMI', r1(e.bmi).toFixed(1), '', bmiCat + ' — a population screen, not a verdict on one person.') +
+      (e.lbm ? tile('Lean body mass', r1(toDisp(e.lbm, s.units)).toFixed(1), u, 'From the ' + s.bf + '% body fat you entered.') : '') +
+      (Math.abs(e.rateKg) > 0.01 ? tile('Expected rate', (e.rateKg > 0 ? '−' : '+') + r1(Math.abs(toDisp(e.rateKg, s.units))).toFixed(2), u + '/wk', 'At the start. It slows as your weight — and so your maintenance — moves.') : '') +
+      '</div></section>';
+
+    /* --- FREE: nutrition --- */
+    var pk = e.protein*4, ck = e.carbs*4, fk = e.fat*9, tk = Math.max(pk+ck+fk, 1);
+    html += '<section class="card"><div class="card-hd"><h2>Daily nutrition</h2>' +
+      '<span class="sub">' + fmt(e.target) + ' kcal · protein first, then calories, then the rest</span>' +
+      '<span class="badge free">free</span></div><div class="card-bd">' +
+      '<div class="macrobar">' +
+        '<div style="width:'+(pk/tk*100).toFixed(1)+'%;background:var(--mp)">P</div>' +
+        '<div style="width:'+(ck/tk*100).toFixed(1)+'%;background:var(--mc)">C</div>' +
+        '<div style="width:'+(fk/tk*100).toFixed(1)+'%;background:var(--mf)">F</div>' +
+      '</div><div class="mlegend">' +
+        macro('var(--mp)','Protein', e.protein, r0(pk/tk*100), 'About ' + r0(e.protein/4) + ' g across four meals. The one macro worth being strict about.') +
+        macro('var(--mc)','Carbohydrate', e.carbs, r0(ck/tk*100), 'Training fuel. Weight the biggest serving toward the meal before you lift.') +
+        macro('var(--mf)','Fat', e.fat, r0(fk/tk*100), 'A floor, not a target — hormones and fat-soluble vitamins depend on it.') +
+      '</div><div class="split">' +
+        '<div><h4>Also every day</h4><ul class="tight">' +
+          '<li><b>' + e.fibre + ' g fibre</b> — roughly 14 g per 1,000 kcal. It does most of the work on hunger.</li>' +
+          '<li><b>' + r1(e.waterTrain) + ' L water</b> on training days, ' + r1(e.waterRest) + ' L otherwise.</li>' +
+          '<li><b>' + cond.steps.toLocaleString('en-GB') + ' steps</b> — the biggest lever on the activity side of the equation.</li>' +
+          '<li><b>7–9 h sleep.</b> Short sleep in a deficit shifts the weight you lose toward lean tissue.</li>' +
+        '</ul></div>' +
+        '<div><h4>Making it stick</h4><ul class="tight">' +
+          '<li>Weigh daily, judge only the seven-day average. Single days swing 1–2 kg on salt and glycogen.</li>' +
+          '<li>Pick five or six protein sources you actually like and rotate them. Variety is where most food tracking dies.</li>' +
+          '<li>Two weeks of no movement in the average is your signal to change one thing — not three.</li>' +
+          '<li>Plan the meal you eat out, rather than treating it as a failure afterwards.</li>' +
+        '</ul></div>' +
+      '</div></div></section>';
+
+    /* --- training: day 1 free, rest gated --- */
+    html += '<section class="card"><div class="card-hd"><h2>Your training week</h2>' +
+      '<span class="sub">' + wk.splitName + ' · ' + s.days + ' days · ' + s.session + ' min · ' +
+      ({gym:'full gym', db:'dumbbells', bw:'bodyweight and bands'})[s.equip] + '</span>' +
+      (locked ? '<span class="lock">Day 1 free</span>' : '') + '</div><div class="days">';
+
+    wk.days.forEach(function(d, i){
+      var showIt = !locked || i === 0;
+      html += '<div class="day' + (showIt ? '' : ' locked') + '">' +
+        '<div class="day-hd"><h3>' + esc(d.name) + '</h3><span class="dn">Day ' + d.n + '</span></div>' +
+        '<p class="day-focus">' + esc(d.focus) + '</p>';
+      if(showIt){
+        html += '<div class="scroll-x"><table>' +
+          '<thead><tr><th>Exercise</th><th class="n">Sets × reps</th><th class="n">RIR</th><th class="n">Rest</th></tr></thead><tbody>' +
+          d.items.map(function(x){
+            return '<tr><td><span class="exname">' + esc(x.name) + '</span>' +
+              (x.isKey ? ' <span class="badge key">key</span>' : '') +
+              '<br><span class="exmusc">' + x.musc + '</span></td>' +
+              '<td class="n">' + x.sets + ' × ' + x.reps + '</td>' +
+              '<td class="n">' + x.rir + '</td><td class="n">' + x.rest + '</td></tr>';
+          }).join('') + '</tbody></table></div>';
+      } else {
+        html += skeletonRows(wk.nEx) +
+          '<p class="locknote"><span aria-hidden="true">🔒</span>' + wk.nEx + ' exercises — unlock below</p>';
+      }
+      html += '</div>';
+    });
+    html += '</div><div class="card-bd"><div class="note"><span class="ic">i</span><span><b>RIR is reps in reserve</b> — how many more you could have done at the moment you racked the weight. RIR 2 means you stopped with two left. It is how this plan controls effort without knowing your one-rep max.</span></div></div></section>';
+
+    /* --- the gate --- */
+    html += gateCard(s, wk);
+
+    /* --- GATED: expectations --- */
+    var showChart = Math.abs(e.rateKg) > 0.01;
+    var eta = (e.goal === 'lose' || e.goal === 'gain') ? weeksToTarget(s, e.target) : null;
+    var ms = milestones(s, e);
+    html += '<section class="card"><div class="card-hd"><h2>What to expect</h2>';
+    if(!locked && s.targetKg != null && eta) html += '<span class="sub">' + r1(toDisp(s.targetKg, s.units)) + ' ' + u + ' in about ' + eta + ' weeks at this intake</span>';
+    else if(!locked && showChart) html += '<span class="sub">Recalculated each week as your weight — and so your maintenance — changes</span>';
+    if(locked) html += '<span class="lock">First stage free</span>';
+    html += '</div><div class="card-bd">';
+
+    if(locked){
+      html += '<div class="milestones"><div class="ms"><div class="wk">' + ms[0].wk + '</div>' +
+        '<div><h4>' + ms[0].h + '</h4><p>' + ms[0].p + '</p></div></div></div>' +
+        skeletonRows(3) +
+        '<p class="locknote"><span aria-hidden="true">🔒</span>Weeks 3 onward, plus your projection chart</p>';
+    } else {
+      if(showChart){
+        var horizon = eta ? Math.min(Math.ceil(eta * 1.15) + 2, 78) : 16;
+        html += chart(project(s, e.target, horizon), s, s.targetKg);
+        if(s.targetKg != null && !eta){
+          html += '<div class="note warn"><span class="ic">▲</span><span>At this intake your weight settles before it reaches ' +
+            r1(toDisp(s.targetKg, s.units)) + ' ' + u + '. That is the curve flattening, not a failure — as you lose weight your maintenance falls to meet your intake. Re-run this plan with your new weight when the line flattens, or pick a faster pace.</span></div>';
+        }
+        html += '<p class="hint">The line bends because maintenance is a function of body mass. Hold calories fixed and the deficit shrinks as you do — which is why every honest plan needs recalculating every few kilos.</p>';
+      }
+      html += '<div class="milestones">' + ms.map(function(m){
+        return '<div class="ms"><div class="wk">' + m.wk + '</div><div><h4>' + m.h + '</h4><p>' + m.p + '</p></div></div>';
+      }).join('') + '</div>';
+    }
+    html += '</div></section>';
+
+    /* --- GATED: volume --- */
+    html += '<section class="card"><div class="card-hd"><h2>Weekly hard sets</h2>' +
+      '<span class="sub">What this week actually adds up to, per muscle</span>' +
+      (locked ? '<span class="lock">Locked</span>' : '') + '</div><div class="card-bd">' +
+      (locked ? skeletonRows(5) + '<p class="locknote"><span aria-hidden="true">🔒</span>Your set totals against the 10–20 productive range</p>'
+              : volumeBlock(wk.vol)) + '</div></section>';
+
+    /* --- GATED: conditioning + progression --- */
+    html += '<section class="card"><div class="card-hd"><h2>Conditioning &amp; progression</h2>' +
+      '<span class="sub">The part that decides whether month three looks different from month one</span>' +
+      (locked ? '<span class="lock">Locked</span>' : '') + '</div><div class="card-bd">';
+    if(locked){
+      html += skeletonRows(4) + '<p class="locknote"><span aria-hidden="true">🔒</span>Zone 2 and interval prescription, double progression, load increments, deload timing</p>';
+    } else {
+      html += '<div class="split">' +
+        '<div><h4>Conditioning</h4><ul class="tight">' +
+          '<li><b>Zone 2:</b> ' + cond.z2 + ' at a pace where you could hold a conversation. On non-lifting days, or after lifting — never before.</li>' +
+          '<li><b>Intervals:</b> ' + cond.hi + '</li>' +
+          '<li><b>Steps:</b> ' + cond.steps.toLocaleString('en-GB') + ' a day. Spread across the day beats one long walk you have to schedule.</li>' +
+        '</ul></div>' +
+        '<div><h4>Adding load</h4><ul class="tight">' +
+          '<li><b>Double progression.</b> Stay at the same weight until you hit the top of the rep range on every set at the prescribed RIR. Then add load and start again at the bottom of the range.</li>' +
+          '<li><b>Increments:</b> 2.5–5 kg on lower-body lifts, 1–2.5 kg on upper-body. Smaller than feels worth it — that is the point.</li>' +
+          '<li><b>Log every set.</b> Weight, reps, RIR. A plan you cannot audit is a plan you cannot fix.</li>' +
+          '<li><b>Deload every ' + (s.exp === 'beginner' ? 'eighth' : 'sixth') + ' week:</b> same exercises, half the sets, about 60% of the load. It is part of the programme, not a week off it.</li>' +
+        '</ul></div></div>' +
+        '<div class="note"><span class="ic">i</span><span><b>When a session goes badly</b> — poor sleep, a stressful day, a lift that feels heavier than it is — drop one set from each exercise and finish. The finished-but-lighter session keeps the habit; the abandoned one costs you two.</span></div>';
+    }
+    html += '</div></section>';
+
+    $('plan').innerHTML = html;
+    lastText = state.unlocked ? asText(s, e, wk, cond) : '';
+    $('copy').textContent = state.unlocked ? 'Copy plan as text' : 'Copy plan as text (unlock first)';
+
+    var gf = $('gform');
+    if(gf) gf.addEventListener('submit', onLeadSubmit);
+    if(state.justUnlocked){
+      state.justUnlocked = false;
+      var done = document.querySelector('.gate.done');
+      if(done) done.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+  }
+
+  function tile(k, v, unit, d, lead){
+    return '<div class="tile' + (lead ? ' lead' : '') + '"><span class="k">' + k + '</span>' +
+      '<b>' + v + (unit ? ' <small>' + unit + '</small>' : '') + '</b><span class="d">' + d + '</span></div>';
+  }
+  function macro(col, name, g, pct, note){
+    return '<div class="m"><span class="swatch" style="background:' + col + '"></span><span>' +
+      '<span class="mk">' + name + '</span><br><span class="mv">' + g + ' g</span> ' +
+      '<span class="mn">· ' + pct + '% of kcal</span><br><span class="mn">' + note + '</span></span></div>';
+  }
+
+  /* ---------- lead capture ---------- */
+  function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v); }
+
+  function onLeadSubmit(ev){
+    ev.preventDefault();
+    if(state.submitting) return;
+    var email = ($('leadEmail').value || '').trim();
+    var name  = ($('leadName').value || '').trim();
+    var ok    = $('leadConsent').checked;
+
+    if(!validEmail(email)){
+      state.gateError = 'That email address does not look right — check it and try again.';
+      render(); $('leadEmail').focus(); return;
+    }
+    if(!ok){
+      state.gateError = 'Tick the consent box and the plan is yours. We will not add you without it.';
+      render(); $('leadConsent').focus(); return;
+    }
+
+    state.gateError = ''; state.submitting = true; render();
+
+    submitLead({email: email, name: name}).then(function(){
+      state.submitting = false;
+      state.unlocked = true;
+      state.justUnlocked = true;
+      try{ localStorage.setItem('automagic.unlocked', '1'); }catch(err){}
+      render();
+    }, function(err){
+      state.submitting = false;
+      state.gateError = (err && err.message) || 'That did not send. Check your connection and try again.';
+      render();
+    });
+  }
+
+  function submitLead(lead){
+    /* DEMO MODE — no endpoint configured. Unlocks locally, sends nothing. */
+    if(!CONFIG.endpoint){
+      if(window.console && console.info){
+        console.info('[Automagic] Demo mode — no CONFIG.endpoint set. Lead NOT sent:', lead);
+      }
+      return new Promise(function(res){ setTimeout(res, 450); });
+    }
+    var body = new URLSearchParams();
+    body.append(CONFIG.fields.email, lead.email);
+    if(lead.name && CONFIG.fields.name) body.append(CONFIG.fields.name, lead.name);
+
+    return fetch(CONFIG.endpoint, {
+      method: 'POST',
+      mode: CONFIG.opaque ? 'no-cors' : 'cors',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body.toString()
+    }).then(function(res){
+      /* an opaque response reports status 0 and cannot be inspected */
+      if(CONFIG.opaque) return true;
+      if(!res.ok) throw new Error('The list server said no (' + res.status + '). Try again in a moment.');
+      return true;
+    });
+  }
+
+  /* ---------- units ---------- */
+  function setUnits(next){
+    if(next === state.units) return;
+    var w = parseFloat($('weight').value), t = parseFloat($('targetWeight').value);
+    if(next === 'imperial'){
+      var totalIn = (parseFloat($('heightCm').value) || 0) / 2.54;
+      $('heightFt').value = Math.floor(totalIn / 12);
+      $('heightIn').value = Math.round(totalIn % 12);
+      if(!isNaN(w)) $('weight').value = r1(w * 2.2046226);
+      if(!isNaN(t)) $('targetWeight').value = r1(t * 2.2046226);
+    } else {
+      var inches = (parseFloat($('heightFt').value)||0)*12 + (parseFloat($('heightIn').value)||0);
+      $('heightCm').value = r0(inches * 2.54);
+      if(!isNaN(w)) $('weight').value = r1(w / 2.2046226);
+      if(!isNaN(t)) $('targetWeight').value = r1(t / 2.2046226);
+    }
+    state.units = next;
+    $('hMetric').hidden = next !== 'metric';
+    $('hImperial').hidden = next === 'metric';
+    $('wUnit').textContent = $('twUnit').textContent = unitW(next);
+    $('unitMetric').setAttribute('aria-pressed', String(next === 'metric'));
+    $('unitImperial').setAttribute('aria-pressed', String(next === 'imperial'));
+    render();
+  }
+
+  function syncGoalFields(){
+    var g = $('goal').value;
+    $('paceGroup').hidden = (g === 'recomp' || g === 'maintain');
+    $('targetGroup').hidden = (g === 'recomp' || g === 'maintain');
+  }
+
+  /* ---------- plain-text export ---------- */
+  function asText(s, e, wk, cond){
+    var u = unitW(s.units), L = [];
+    L.push('AUTOMAGIC FITNESS PLAN');
+    L.push('Generated ' + new Date().toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'}));
+    L.push('');
+    L.push('PROFILE: ' + s.sex + ', ' + s.age + ', ' + r1(toDisp(s.weightKg, s.units)) + ' ' + u + ', ' +
+           (s.units === 'metric' ? r0(s.heightCm) + ' cm' : Math.floor(s.heightCm/2.54/12) + 'ft ' + r0(s.heightCm/2.54%12) + 'in') +
+           (s.bf ? ', ' + s.bf + '% body fat' : '') + ' — goal: ' + GOAL_LABEL[e.goal]);
+    L.push('');
+    L.push('ENERGY (' + e.method + ')');
+    L.push('  Resting metabolic rate : ' + fmt(e.bmr) + ' kcal');
+    L.push('  Maintenance (TDEE)     : ' + fmt(e.tdee) + ' kcal');
+    L.push('  Daily target           : ' + fmt(e.target) + ' kcal');
+    if(Math.abs(e.rateKg) > 0.01) L.push('  Expected rate          : ' + (e.rateKg > 0 ? '-' : '+') + r1(Math.abs(toDisp(e.rateKg, s.units))) + ' ' + u + '/week');
+    L.push('');
+    L.push('MACROS');
+    L.push('  Protein : ' + e.protein + ' g');
+    L.push('  Carbs   : ' + e.carbs + ' g');
+    L.push('  Fat     : ' + e.fat + ' g');
+    L.push('  Fibre   : ' + e.fibre + ' g');
+    L.push('  Water   : ' + r1(e.waterTrain) + ' L training days / ' + r1(e.waterRest) + ' L rest days');
+    L.push('  Steps   : ' + cond.steps.toLocaleString('en-GB') + ' per day');
+    L.push('');
+    L.push('TRAINING — ' + wk.splitName + ' (' + s.days + ' days, ' + s.session + ' min)');
+    wk.days.forEach(function(d){
+      L.push('');
+      L.push('  Day ' + d.n + ' — ' + d.name + ' (' + d.focus + ')');
+      d.items.forEach(function(x){
+        L.push('    ' + (x.name + '                                    ').slice(0, 36) +
+               x.sets + ' x ' + x.reps + '  @ RIR ' + x.rir + '  rest ' + x.rest);
+      });
+    });
+    L.push('');
+    L.push('WEEKLY HARD SETS');
+    MUSC_ORDER.forEach(function(m){ if(wk.vol[m]) L.push('  ' + (m + '             ').slice(0, 13) + wk.vol[m]); });
+    L.push('');
+    L.push('CONDITIONING');
+    L.push('  Zone 2    : ' + cond.z2);
+    L.push('  Intervals : ' + cond.hi);
+    L.push('');
+    L.push('PROGRESSION');
+    L.push('  Double progression: hold the load until you hit the top of the rep range on every');
+    L.push('  set at the prescribed RIR, then add 2.5-5 kg lower body / 1-2.5 kg upper body.');
+    L.push('  Deload every ' + (s.exp === 'beginner' ? '8th' : '6th') + ' week: half the sets, ~60% load.');
+    L.push('');
+    L.push('General fitness information, not medical advice. See a doctor before starting if you');
+    L.push('are pregnant or breastfeeding, managing a cardiac, metabolic or eating disorder, or');
+    L.push('returning from injury.');
+    return L.join('\n');
+  }
+
+  /* ---------- persistence: per-viewer convenience only ---------- */
+  var FIELDS = ['sex','age','heightCm','heightFt','heightIn','weight','bodyfat','activity','goal','pace','targetWeight','exp','days','session','equip'];
+  function save(){
+    try{
+      var o = {units: state.units};
+      FIELDS.forEach(function(f){ o[f] = $(f).value; });
+      localStorage.setItem('automagic.v1', JSON.stringify(o));
+    }catch(err){ /* private window or blocked storage — the page works without it */ }
+  }
+  function restore(){
+    try{
+      if(localStorage.getItem('automagic.unlocked') === '1') state.unlocked = true;
+      var raw = localStorage.getItem('automagic.v1');
+      if(!raw) return;
+      var o = JSON.parse(raw);
+      if(o.units === 'imperial'){
+        state.units = 'imperial';
+        $('hMetric').hidden = true; $('hImperial').hidden = false;
+        $('wUnit').textContent = $('twUnit').textContent = 'lb';
+        $('unitMetric').setAttribute('aria-pressed','false');
+        $('unitImperial').setAttribute('aria-pressed','true');
+      }
+      FIELDS.forEach(function(f){ if(o[f] !== undefined && o[f] !== null) $(f).value = o[f]; });
+    }catch(err){ /* ignore */ }
+  }
+
+  /* ---------- wiring ---------- */
+  $('form').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    render();
+    if(window.matchMedia('(max-width:920px)').matches){
+      $('plan').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  });
+  $('units').addEventListener('click', function(ev){
+    var b = ev.target.closest('button[data-units]');
+    if(b){ setUnits(b.dataset.units); save(); }
+  });
+  function onEdit(){ syncGoalFields(); render(); save(); }
+  $('form').addEventListener('input', onEdit);
+  $('form').addEventListener('change', onEdit);
+
+  $('copy').addEventListener('click', function(){
+    var btn = $('copy');
+    if(!state.unlocked){
+      var g = document.querySelector('.gate');
+      if(g) g.scrollIntoView({behavior:'smooth', block:'center'});
+      var le = $('leadEmail'); if(le) le.focus({preventScroll:true});
+      return;
+    }
+    var done = function(ok){
+      btn.textContent = ok ? 'Copied to clipboard' : 'Could not copy — select the plan and copy it';
+      setTimeout(function(){ btn.textContent = 'Copy plan as text'; }, 2400);
+    };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(lastText).then(function(){ done(true); }, function(){ done(false); });
+    } else { done(false); }
+  });
+
+  restore();
+  syncGoalFields();
+  render();
+})();
+</script>
