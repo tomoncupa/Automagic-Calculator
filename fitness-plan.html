@@ -600,7 +600,7 @@ footer.foot strong{color:var(--text-2)}
     var goal = s.goal;
 
     if(s.age < 18){
-      notes.push({t:'bad', txt:'You are under 18, so this plan holds calories at maintenance with no deficit or surplus. A growing body needs its full energy intake, and body-composition goals at your age belong with a doctor or registered dietitian who can see you in person. The training week below still applies: supervised, technique first, conservative loads.'});
+      notes.push({t:'bad', txt:'You are under 18. This plan holds calories at maintenance with no deficit or surplus. A growing body needs its full energy intake, and body-composition goals at your age belong with a doctor or registered dietitian who can see you in person. The training week below still applies: supervised, technique first, conservative loads.'});
       goal = 'maintain';
     }
 
@@ -624,7 +624,7 @@ footer.foot strong{color:var(--text-2)}
       var floor = Math.max(bmr * 1.05, s.sex === 'male' ? 1500 : 1200);
       if(target < floor){
         target = floor;
-        notes.push({t:'warn', txt:'Raised to ' + fmt(floor) + ' kcal, a floor set just above your resting metabolic rate. Below that, an unsupervised plan starts costing you hormones and micronutrients.'});
+        notes.push({t:'warn', txt:'Raised to ' + fmt(floor) + ' kcal, a floor set a little above your resting metabolic rate. Below that, an unsupervised plan starts costing you hormones and micronutrients.'});
       }
       rateKg = (tdee - target) * 7 / 7700;
     }
@@ -897,7 +897,7 @@ footer.foot strong{color:var(--text-2)}
   function milestones(s, e){
     var g = e.goal;
     if(g === 'lose') return [
-      {wk:'Weeks 1–2', h:'A fast drop, mostly water', p:'Expect ' + span(1, 2, s.wu) + ' in the first fortnight. Most of it is glycogen and the water stored with it. That early drop is why week 3 often looks like a stall while the plan is still on track.'},
+      {wk:'Weeks 1–2', h:'A fast drop, mostly water', p:'Expect ' + span(1, 2, s.wu) + ' in the first fortnight. Most of it is glycogen and the water stored with it. That early drop is why week 3 often reads as a stall while the plan is still on track.'},
       {wk:'Weeks 3–6', h:'The real rate shows up', p:'Average your weigh-ins across each week and compare week to week. If the seven-day average has not moved in two weeks, cut 150 kcal or add 1,500 steps. One change, then wait another two weeks.'},
       {wk:'Weeks 7–10', h:'Lifts hold steady', p:'Strength holding steady is the win here. The same top-set loads in a deficit means you are keeping your muscle.'},
       {wk:'Weeks 11–16', h:'Diet break or push on', p:'Ten to sixteen weeks is about as long as most people hold a deficit well. Two weeks at maintenance costs very little total progress and buys back appetite control and training quality.'}
