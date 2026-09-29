@@ -1206,7 +1206,14 @@ footer.foot strong{color:var(--text-2)}
         '</div></div></section>';
     }
 
+    /* keep anything already typed into the email card across a redraw */
+    var keep = {n: $('leadName') && $('leadName').value, m: $('leadEmail') && $('leadEmail').value,
+                c: $('leadConsent') && $('leadConsent').checked, f: document.activeElement && document.activeElement.id};
     $('plan').innerHTML = html;
+    if($('leadName') && keep.n) $('leadName').value = keep.n;
+    if($('leadEmail') && keep.m) $('leadEmail').value = keep.m;
+    if($('leadConsent') && keep.c) $('leadConsent').checked = true;
+    if(keep.f && /^lead/.test(keep.f) && $(keep.f)) $(keep.f).focus({preventScroll:true});
     lastText = state.unlocked ? asText(s, e, wk, cond) : '';
     $('copy').textContent = state.unlocked ? 'Copy plan as text' : 'Copy plan as text (after email)';
 
@@ -1448,7 +1455,16 @@ footer.foot strong{color:var(--text-2)}
   $('hUnits').addEventListener('click', function(ev){
     var b = ev.target.closest('button[data-hu]'); if(b) setHeightUnit(b.dataset.hu);
   });
-  function onEdit(){ syncGoalFields(); render(); save(); }
+  /* a field fires "input" while typing and "change" again when you leave it.
+     Redraw only when an answer actually changed, so leaving the weight box
+     to tap the email card does not redraw the card out from under the tap. */
+  var lastAnswers = '';
+  function onEdit(){
+    syncGoalFields();
+    var now = JSON.stringify(read());
+    if(now === lastAnswers) return;
+    lastAnswers = now; render(); save();
+  }
   $('form').addEventListener('input', onEdit);
   $('form').addEventListener('change', onEdit);
 
