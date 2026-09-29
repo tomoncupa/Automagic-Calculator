@@ -253,6 +253,21 @@ svg.chart{display:block; width:100%; height:auto; max-width:100%}
 .gate.done{border-color:var(--border)}
 .done-hd{display:flex; gap:10px; align-items:center; padding:16px 22px; background:var(--accent-soft); color:var(--accent); border-bottom:1px solid var(--border)}
 .done-hd h2{font-size:17px; margin:0; text-transform:uppercase; letter-spacing:.04em}
+a.cta{display:flex; align-items:center; justify-content:center; text-decoration:none; text-align:center}
+
+/* ---------- Home Buddy Body: the free app, then the book ---------- */
+.hs{display:flex; flex-direction:column; gap:12px; padding:16px; border:1px solid var(--accent); border-radius:var(--cut); background:var(--accent-soft)}
+.hs h3{font-size:17px; text-transform:uppercase; letter-spacing:.04em; color:var(--accent)}
+.hs p{margin:0; font-size:14px; color:var(--text-2)}
+.hs .cta{max-width:360px}
+.offer{border-color:var(--border-strong)}
+.offer-grid{display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr); gap:24px; align-items:start}
+@media (max-width:760px){ .offer-grid{grid-template-columns:1fr; gap:18px} }
+.offer-lede{margin:0 0 12px; font-size:14px; color:var(--text-2)}
+.offer-lede b{color:var(--text-1)}
+.offer-buy{display:flex; flex-direction:column; gap:12px; padding:16px; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--cut)}
+.chips-row{display:flex; flex-wrap:wrap; gap:6px}
+.offer .price{font-family:var(--font-display); font-size:40px; font-weight:600; line-height:1; color:var(--accent)}
 
 footer.foot{margin-top:34px; padding-top:20px; border-top:1px solid var(--border); font-size:12.5px; color:var(--text-muted); line-height:1.65}
 footer.foot p{max-width:80ch; margin:0 0 14px}
@@ -447,14 +462,20 @@ footer.foot strong{color:var(--text-2)}
      See README.md for per-provider values.
      ============================================================ */
   var CONFIG = {
-    /* Your list provider's form action URL. Leave empty to run in
-       demo mode: the gate opens and the lead is logged to the
-       console instead of being sent anywhere. */
+    /* THE ONE STEP TO GO LIVE: paste your Kit form's number between the
+       quotes, e.g. "7654321". It is the number in the form's address when
+       you edit it in Kit. Empty = demo mode: the gate opens, nothing is
+       sent, and the lead is logged to the browser console. */
+    kitFormId: "",
+    kitBase: "https://app.kit.com/forms/",  /* if Kit submissions fail, try "https://app.convertkit.com/forms/" */
+
+    /* Another provider instead of Kit: its form action URL (see README).
+       Leave empty when using Kit; it is filled from kitFormId below. */
     endpoint: "",
 
-    /* Field names your provider expects. Kit/ConvertKit use
-       email_address + first_name; Mailchimp uses EMAIL + FNAME. */
-    fields: { email: "email_address", name: "first_name" },
+    /* Field names the provider expects. Kit: email_address + fields[first_name].
+       Mailchimp: EMAIL + FNAME. */
+    fields: { email: "email_address", name: "fields[first_name]" },
 
     /* Most embedded-form endpoints do not return CORS headers.
        true  = fire-and-forget (no-cors); we cannot read the response,
@@ -467,10 +488,26 @@ footer.foot strong{color:var(--text-2)}
        single opt-in and no confirmation email goes out. */
     doubleOptIn: true,
 
-    /* What you promise on the form. Keep it true. */
-    promise: "One email a week: one idea you can use in your next session.",
-    privacyUrl: ""   /* optional; renders a Privacy link when set */
+    /* What you promise on the form. Keep it true: it matches the Home
+       Buddy Body 7-day series the Kit form feeds. */
+    promise: "Your numbers, your Home Screen link and a free 4-week home plan by email. Then one email a day for 7 days, then one a week.",
+    privacyUrl: "",  /* optional; renders a Privacy link when set */
+
+    /* Home Buddy Body: the free app the results open, and the book they offer. */
+    homeScreenUrl: "https://tomoncupa.github.io/homescreen/",
+    productUrl: "https://tomoncupa.github.io/home-buddy-body/#get",
+
+    /* Meta pixel ID for the Facebook ads. Empty = no pixel, nothing sent to Meta. */
+    metaPixelId: ""
   };
+  if(!CONFIG.endpoint && CONFIG.kitFormId) CONFIG.endpoint = CONFIG.kitBase + CONFIG.kitFormId + '/subscriptions';
+
+  /* ---------- Meta pixel, only when an ID is set ---------- */
+  if(CONFIG.metaPixelId){
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    window.fbq('init', CONFIG.metaPixelId); window.fbq('track', 'PageView');
+  }
+  function px(ev, data){ try{ if(window.fbq) window.fbq('track', ev, data || {}); }catch(err){} }
 
   /* ---------- exercise library: pattern -> equipment variants ---------- */
   var LIB = {
@@ -560,7 +597,21 @@ footer.foot strong{color:var(--text-2)}
   var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){
     return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]; }); };
 
-  var state = {wu:'kg', hu:'ft', unlocked:false, submitting:false, gateError:'', justUnlocked:false, view:null, pick:null};
+  var state = {wu:'kg', hu:'ft', unlocked:false, submitting:false, gateError:'', justUnlocked:false, view:null, pick:null, leadName:''};
+
+  /* ---------- Home Buddy Body: the numbers the app and the emails need ---------- */
+  function riceFor(cal){ return cal < 1500 ? '1/2 cup' : cal < 1900 ? '3/4 cup' : cal < 2300 ? '1 cup' : '1 1/2 cups'; }
+  function leadNumbers(s, e){
+    return {cal: r0(e.target), p: e.protein, w: r1(s.weightKg), tdee: r0(e.tdee), rice: riceFor(e.target),
+            g: e.goal === 'lose' ? 'lose' : (e.goal === 'gain' ? 'gain' : 'hold')};
+  }
+  /* the Home Screen reads n, cal, p, w and g from its address and sets itself up */
+  function hsLink(s, e){
+    var n = leadNumbers(s, e);
+    return CONFIG.homeScreenUrl + '?n=' + encodeURIComponent(state.leadName || '') + '&cal=' + n.cal +
+      '&p=' + n.p + '&w=' + n.w + '&g=' + n.g;
+  }
+  var adult = function(s){ return s.age >= 18; };  /* Home Buddy Body is for adults only */
 
   /* ---------- read the form ---------- */
   function read(){
@@ -932,12 +983,19 @@ footer.foot strong{color:var(--text-2)}
     return out;
   }
 
-  function gateCard(s, wk){
+  function gateCard(s, wk, e){
     if(state.unlocked){
       return '<section class="gate done"><div class="done-hd"><span aria-hidden="true">✓</span>' +
         '<h2>You are on the list</h2></div><div class="card-bd">' +
         (CONFIG.endpoint && CONFIG.doubleOptIn
           ? '<div class="note"><span class="ic">✉</span><span><b>One step left:</b> check your inbox and click the confirmation link. Nothing else sends until you do.</span></div>'
+          : '') +
+        (adult(s)
+          ? '<div class="hs"><h3>Your Home Screen is ready</h3>' +
+              '<p>Your numbers are already inside: ' + fmt(e.target) + ' kcal and ' + e.protein + ' g protein a day. ' +
+              'Tick 5 boxes a day, follow the home workouts, and watch your weekly weight on a chart.</p>' +
+              '<a class="cta" id="hsOpen" href="' + esc(hsLink(s, e)) + '" target="_blank" rel="noopener" data-px="CompleteRegistration">Open my Home Screen</a>' +
+              '<p class="hint">Open it, then tap Share or ⋮ and "Add to Home Screen". It sits on your phone as an app, with no account. Weeks 1 to 4 are free.</p></div>'
           : '') +
         '<p style="margin:0;color:var(--text-2);font-size:14px">' + esc(CONFIG.promise) + ' The whole plan is yours. Copy it out with the button in the panel, and run this page again every four to six weeks. Maintenance calories move with your weight, and a plan built on the old number slowly stops working.</p>' +
         '</div></section>';
@@ -954,6 +1012,7 @@ footer.foot strong{color:var(--text-2)}
           '<li><span class="tick">✓</span><span><b>Conditioning and step targets</b> that fit around the lifting</span></li>' +
           '<li><span class="tick">✓</span><span><b>The progression and deload rules</b> that make month three look different from month one</span></li>' +
           '<li><span class="tick">✓</span><span><b>Your week-by-week projection</b> and what to change when it stalls</span></li>' +
+          (adult(s) ? '<li><span class="tick">✓</span><span><b>Your Home Screen app</b> with these numbers already inside: 5 daily boxes, home workouts and your weight on a chart. Weeks 1 to 4 free.</span></li>' : '') +
         '</ul>' +
       '</div>' +
       '<form class="gform" id="gform" novalidate>' +
@@ -962,7 +1021,7 @@ footer.foot strong{color:var(--text-2)}
         '<div class="field"><label for="leadEmail">Email</label>' +
           '<input type="email" id="leadEmail" autocomplete="email" required placeholder="you@example.com"></div>' +
         '<label class="consent"><input type="checkbox" id="leadConsent">' +
-          '<span>Yes, send me the full plan and one training email a week. I can unsubscribe in one click.</span></label>' +
+          '<span>Yes, email me my numbers and a free 4-week home plan, then one email a day for 7 days and one a week after. I can unsubscribe in one click.</span></label>' +
         (state.gateError ? '<p class="err">' + esc(state.gateError) + '</p>' : '') +
         '<button type="submit" class="cta" id="leadSubmit"' + (state.submitting ? ' disabled' : '') + '>' +
           (state.submitting ? 'Sending…' : 'Send me the full plan') + '</button>' +
@@ -1064,7 +1123,7 @@ footer.foot strong{color:var(--text-2)}
     html += '</div><div class="card-bd" style="border-top:1px solid var(--border)"><div class="note"><span class="ic">i</span><span><b>RIR means reps in reserve:</b> how many more you could have done when you racked the weight. RIR 2 means you stopped with two left. It controls effort without needing your one-rep max.</span></div></div></section>';
 
     /* --- the gate --- */
-    html += gateCard(s, wk);
+    html += gateCard(s, wk, e);
 
     /* --- GATED: expectations --- */
     var showChart = Math.abs(e.rateKg) > 0.01;
@@ -1127,6 +1186,26 @@ footer.foot strong{color:var(--text-2)}
     }
     html += '</div></section>';
 
+    /* --- after the email: the 12-week home plan the free app is the start of --- */
+    if(!locked && adult(s)){
+      html += '<section class="card offer" id="hbb"><div class="card-hd"><h2>Home Buddy Body</h2>' +
+        '<span class="sub">The 12-week home plan · Every Body Training</span><span class="badge key">₱499</span></div>' +
+        '<div class="card-bd"><div class="offer-grid">' +
+          '<div><p class="offer-lede"><b>You have the numbers. Home Buddy Body is the plan for all 12 weeks.</b> ' +
+            'Your free Home Screen covers weeks 1 to 4. The book covers all 12, plus the food.</p>' +
+            '<ul class="tight">' +
+              '<li>How much rice, the ulam scale, and cheap protein with peso prices</li>' +
+              '<li>Three full days of Filipino meals with rice</li>' +
+              '<li>What to order at Jollibee, Mang Inasal, the carinderia and at birthdays</li>' +
+              '<li>All 12 weeks of home workouts, easier and harder versions, 21 how-to pages with pictures</li>' +
+              '<li>Your Home Screen app with all 12 weeks open</li>' +
+            '</ul></div>' +
+          '<div class="offer-buy"><div class="chips-row"><span class="chip">No injections</span><span class="chip">No pills</span><span class="chip">No gym</span><span class="chip">With rice</span></div>' +
+            '<b class="price">₱499</b><p class="hint">Pay once with GCash or bank QR. The 65-page guide and your app code come by email.</p>' +
+            '<a class="cta" href="' + esc(CONFIG.productUrl) + '" data-px="InitiateCheckout">See Home Buddy Body</a></div>' +
+        '</div></div></section>';
+    }
+
     $('plan').innerHTML = html;
     lastText = state.unlocked ? asText(s, e, wk, cond) : '';
     $('copy').textContent = state.unlocked ? 'Copy plan as text' : 'Copy plan as text (after email)';
@@ -1175,12 +1254,15 @@ footer.foot strong{color:var(--text-2)}
 
     state.gateError = ''; state.submitting = true; render();
 
-    submitLead({email: email, name: name}).then(function(){
+    var s = read(), e = energy(s);
+    submitLead({email: email, name: name, s: s, n: leadNumbers(s, e)}).then(function(){
       state.submitting = false;
       state.unlocked = true;
       state.justUnlocked = true;
       state.view = 'week';
-      try{ localStorage.setItem('automagic.unlocked', '1'); }catch(err){}
+      state.leadName = name;
+      try{ localStorage.setItem('automagic.unlocked', '1'); localStorage.setItem('automagic.name', name); }catch(err){}
+      px('Lead', {content_name: 'automagic'});
       render();
     }, function(err){
       state.submitting = false;
@@ -1200,6 +1282,14 @@ footer.foot strong{color:var(--text-2)}
     var body = new URLSearchParams();
     body.append(CONFIG.fields.email, lead.email);
     if(lead.name && CONFIG.fields.name) body.append(CONFIG.fields.name, lead.name);
+    /* Kit custom fields the Home Buddy Body emails read. Kit drops any
+       field that does not exist in the account yet, and keeps the rest. */
+    if(CONFIG.kitFormId && lead.n){
+      var s = lead.s, n = lead.n;
+      [['sex', s.sex === 'male' ? 'm' : 'f'], ['age', s.age], ['height_cm', r0(s.heightCm)], ['weight_kg', n.w],
+       ['goal', n.g], ['tdee', n.tdee], ['target_kcal', n.cal], ['protein_g', n.p], ['rice_cup', n.rice]]
+        .forEach(function(f){ body.append('fields[' + f[0] + ']', String(f[1])); });
+    }
 
     return fetch(CONFIG.endpoint, {
       method: 'POST',
@@ -1317,6 +1407,7 @@ footer.foot strong{color:var(--text-2)}
   function restore(){
     try{
       if(localStorage.getItem('automagic.unlocked') === '1') state.unlocked = true;
+      state.leadName = localStorage.getItem('automagic.name') || '';
       var raw = localStorage.getItem('automagic.v1');
       if(!raw) return;
       var o = JSON.parse(raw);
@@ -1362,6 +1453,8 @@ footer.foot strong{color:var(--text-2)}
   $('form').addEventListener('change', onEdit);
 
   $('plan').addEventListener('click', function(ev){
+    var tracked = ev.target.closest('a[data-px]');
+    if(tracked){ px(tracked.dataset.px, tracked.dataset.px === 'InitiateCheckout' ? {value:499, currency:'PHP'} : {content_name:'home_screen'}); return; }
     var v = ev.target.closest('button[data-view]');
     if(v){
       if(!state.unlocked && v.dataset.view !== 'd0'){ toGate(); return; }

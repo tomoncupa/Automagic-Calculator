@@ -7,16 +7,31 @@ rules unlock in exchange for an email.
 
 `fitness-plan.html` is the whole product. No build step, no backend, no npm.
 
+**Live:** https://tomoncupa.github.io/Automagic-Calculator/ (GitHub Pages, `main` branch, root).
+`index.html` only forwards to `fitness-plan.html`, keeping any `?utm_...` tags.
+
+**It feeds Home Buddy Body.** After the email, the results show an "Open my Home Screen" button
+(`CONFIG.homeScreenUrl` with `n`, `cal`, `p`, `w`, `g` in the address, so the app sets itself up
+with the lead's name and numbers) and the ₱499 Home Buddy Body offer (`CONFIG.productUrl`).
+Both show for visitors aged 18 and over only. `CONFIG.metaPixelId` turns on the Meta pixel
+(PageView, Lead, CompleteRegistration on the app button, InitiateCheckout on the offer).
+
 ---
 
 ## 1. Wire it to your list
 
-Open `fitness-plan.html`, find the `CONFIG` block near the top of the `<script>` (search for
-`CONFIG = {`), and set `endpoint` plus `fields`.
+**Kit, the live setup: paste the form's number into `kitFormId` in `CONFIG`. That is the whole
+step.** The page builds the Kit endpoint from it, sends `email_address` and
+`fields[first_name]`, and adds the custom fields the Home Buddy Body emails read: `sex`, `age`,
+`height_cm`, `weight_kg`, `goal`, `tdee`, `target_kcal`, `protein_g`, `rice_cup`. Kit keeps the
+ones that exist in the account and drops the rest, so the form works before the fields exist.
+
+For another provider, leave `kitFormId` empty and set `endpoint` plus `fields` from this table.
+Open `fitness-plan.html` and search for `CONFIG = {`.
 
 | Provider | `endpoint` | `fields` | `opaque` |
 |---|---|---|---|
-| **Kit (ConvertKit)** | `https://app.kit.com/forms/<FORM_ID>/subscriptions` | `{email:"email_address", name:"first_name"}` | `true` |
+| **Kit (ConvertKit)** | use `kitFormId` instead | `{email:"email_address", name:"fields[first_name]"}` | `true` |
 | **Mailchimp** | your embedded form's `action` URL, with `/post` changed to `/post-json` | `{email:"EMAIL", name:"FNAME"}` | `true` |
 | **MailerLite** | `https://assets.mailerlite.com/jsonp/<ACCOUNT>/forms/<FORM_ID>/subscribe` | `{email:"fields[email]", name:"fields[name]"}` | `true` |
 | **Beehiiv** | your form's POST URL | `{email:"email", name:"first_name"}` | `true` |
@@ -42,11 +57,11 @@ Other `CONFIG` keys:
 
 ### Verify it works
 
-1. Set `endpoint`, save, open the file in a browser.
-2. Submit a real address you control.
-3. Confirm the subscriber appears in your provider's dashboard.
+1. Set `kitFormId` (or `endpoint`), commit, push, wait a minute for Pages.
+2. Submit a real address you control on the live page.
+3. Confirm the subscriber appears in Kit, with the custom fields filled.
 
-With `endpoint: ""` the page runs in **demo mode**: the gate unlocks, nothing is sent, and the
+With `kitFormId: ""` and `endpoint: ""` the page runs in **demo mode**: the gate unlocks, nothing is sent, and the
 lead is logged to the browser console. That is the default so the file is safe to open and
 click through before it is wired up.
 
@@ -54,7 +69,8 @@ click through before it is wired up.
 
 ## 2. Host it
 
-It is one static file. Anywhere that serves static files works:
+Hosted on GitHub Pages from this repo (public). Pushing to `main` redeploys in about a minute.
+It is one static file, so anywhere else that serves static files also works:
 
 - Drop it into your site as `/fitness-plan.html`
 - Netlify / Vercel / Cloudflare Pages — drag the file in
