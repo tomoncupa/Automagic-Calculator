@@ -1027,7 +1027,7 @@ footer.foot strong{color:var(--text-2)}
         (state.gateError ? '<p class="err">' + esc(state.gateError) + '</p>' : '') +
         '<button type="submit" class="cta" id="leadSubmit"' + (state.submitting ? ' disabled' : '') + '>' +
           (state.submitting ? 'Sending…' : 'Send me the full plan') + '</button>' +
-        '<p class="promise">' + esc(CONFIG.promise) + ' No spam. Your address stays with me. Unsubscribe in one click' +
+        '<p class="promise">No spam. Your address stays with me' +
           (CONFIG.privacyUrl ? ' · <a href="' + esc(CONFIG.privacyUrl) + '" target="_blank" rel="noopener">privacy policy</a>' : '') + '.</p>' +
       '</form>' +
     '</div></section>';
