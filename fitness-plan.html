@@ -466,7 +466,7 @@ footer.foot strong{color:var(--text-2)}
        quotes, e.g. "7654321". It is the number in the form's address when
        you edit it in Kit. Empty = demo mode: the gate opens, nothing is
        sent, and the lead is logged to the browser console. */
-    kitFormId: "",
+    kitFormId: "10075933",  /* calc-optin-fb (Automagic Calculator), made 2026-10-21 */
     kitBase: "https://app.kit.com/forms/",  /* if Kit submissions fail, try "https://app.convertkit.com/forms/" */
 
     /* Another provider instead of Kit: its form action URL (see README).
@@ -486,7 +486,7 @@ footer.foot strong{color:var(--text-2)}
 
     /* Shown after a successful submit. Set to false if your list is
        single opt-in and no confirmation email goes out. */
-    doubleOptIn: true,
+    doubleOptIn: false,  /* the Kit form sends no confirmation email; Day 0 is the delivery */
 
     /* What you promise on the form. Keep it true: it matches the Home
        Buddy Body 7-day series the Kit form feeds. */
