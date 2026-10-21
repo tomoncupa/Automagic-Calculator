@@ -79,11 +79,13 @@ legend{padding:0 0 2px; font-family:var(--font-display); font-size:11px; font-we
 .field > label,.field > .lbl{font-size:13px; font-weight:500; color:var(--text-2)}
 .opt{font-weight:400; color:var(--text-muted)}
 .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-input[type="number"],input[type="email"],input[type="text"],select{
-  width:100%; min-height:var(--tap); font-family:var(--font-display); font-size:15px; font-weight:500;
+/* 16px on every box: smaller text makes the iPhone zoom in when a box is tapped.
+   Number boxes are type=text with inputmode, so the phone shows a number pad. */
+input[type="email"],input[type="text"],select{
+  width:100%; min-height:var(--tap); font-family:var(--font-display); font-size:16px; font-weight:500;
   padding:9px 12px; border:1px solid var(--border); border-radius:var(--cut);
   background:var(--surface-2); color:var(--text-1); appearance:none; -webkit-appearance:none}
-input[type="email"],input[type="text"],select{font-family:var(--font-body); font-weight:400; font-size:14.5px}
+input[type="email"],input[type="text"]:not([inputmode]),select{font-family:var(--font-body); font-weight:400}
 input::placeholder{color:var(--text-muted)}
 input:hover,select:hover{border-color:var(--border-strong)}
 select{padding-right:32px;
@@ -320,7 +322,7 @@ footer.foot strong{color:var(--text-2)}
             </div>
             <div class="field">
               <label for="age">Age</label>
-              <input type="number" id="age" min="12" max="95" step="1" value="30" inputmode="numeric">
+              <input type="text" id="age" autocomplete="off" value="30" inputmode="numeric">
             </div>
           </div>
 
@@ -329,10 +331,10 @@ footer.foot strong{color:var(--text-2)}
               <label for="heightCm" id="hLabel">Height</label>
             </div>
             <div class="withunit">
-              <input type="number" id="heightCm" min="120" max="230" step="1" value="175" inputmode="decimal" aria-labelledby="hLabel" hidden>
+              <input type="text" id="heightCm" autocomplete="off" value="175" inputmode="decimal" aria-labelledby="hLabel" hidden>
               <div class="inpair" id="hFtIn">
-                <input type="number" id="heightFt" min="3" max="7" step="1" value="5" inputmode="numeric" aria-label="Height, feet" placeholder="ft">
-                <input type="number" id="heightIn" min="0" max="11" step="1" value="9" inputmode="numeric" aria-label="Height, inches" placeholder="in">
+                <input type="text" id="heightFt" autocomplete="off" value="5" inputmode="numeric" aria-label="Height, feet" placeholder="ft">
+                <input type="text" id="heightIn" autocomplete="off" value="9" inputmode="numeric" aria-label="Height, inches" placeholder="in">
               </div>
               <div class="seg" id="hUnits" role="group" aria-label="Height unit">
                 <button type="button" data-hu="cm" aria-pressed="false">cm</button>
@@ -344,7 +346,7 @@ footer.foot strong{color:var(--text-2)}
           <div class="field">
             <label for="weight">Weight</label>
             <div class="withunit">
-              <input type="number" id="weight" min="30" max="400" step="0.1" value="80" inputmode="decimal">
+              <input type="text" id="weight" autocomplete="off" value="80" inputmode="decimal">
               <div class="seg" id="wUnits" role="group" aria-label="Weight unit">
                 <button type="button" data-wu="kg" aria-pressed="true">kg</button>
                 <button type="button" data-wu="lb" aria-pressed="false">lb</button>
@@ -354,7 +356,7 @@ footer.foot strong{color:var(--text-2)}
 
           <div class="field">
             <label for="bodyfat">Body fat % <span class="opt">optional</span></label>
-            <input type="number" id="bodyfat" min="3" max="65" step="0.5" placeholder="Skip if you don't know" inputmode="decimal">
+            <input type="text" id="bodyfat" autocomplete="off" placeholder="Skip if you don't know" inputmode="decimal">
           </div>
           <p class="hint">Sex and age go into the Mifflin–St Jeor equation. Add a body-fat percentage and the sharper Katch–McArdle equation takes over.</p>
 
@@ -391,7 +393,7 @@ footer.foot strong{color:var(--text-2)}
           </div>
           <div class="field" id="targetGroup">
             <label for="targetWeight">Target weight (<span id="twUnit">kg</span>) <span class="opt">optional</span></label>
-            <input type="number" id="targetWeight" min="30" max="400" step="0.1" value="72" inputmode="decimal">
+            <input type="text" id="targetWeight" autocomplete="off" value="72" inputmode="decimal">
           </div>
         </fieldset>
 
@@ -1059,7 +1061,7 @@ footer.foot strong{color:var(--text-2)}
       tile('Resting metabolic rate', fmt(e.bmr), 'kcal', 'What you would burn lying still all day.') +
       tile('Maintenance (TDEE)', fmt(e.tdee), 'kcal', 'Total daily energy expenditure: resting rate × your activity multiplier of ' + s.activity + '.') +
       tile('Daily target', fmt(e.target), 'kcal', diff < 20 ? 'Maintenance. No deficit or surplus.' : fmt(diff) + ' kcal ' + dirWord + ' a day.', true) +
-      tile('BMI', r1(e.bmi).toFixed(1), '', bmiCat + '. A population screen, blind to muscle.') +
+      tile('BMI', r1(e.bmi).toFixed(1), '', 'Body mass index. ' + bmiCat + '. A population screen, blind to muscle.') +
       (e.lbm ? tile('Lean body mass', r1(toDisp(e.lbm, u)).toFixed(1), u, 'From the ' + s.bf + '% body fat you entered.') : '') +
       (Math.abs(e.rateKg) > 0.01 ? tile('Expected rate', (e.rateKg > 0 ? '−' : '+') + r1(Math.abs(toDisp(e.rateKg, u))).toFixed(2), u + '/wk', 'At the start. It slows as your weight, and your maintenance with it, moves.') : '') +
       '</div></section>';
