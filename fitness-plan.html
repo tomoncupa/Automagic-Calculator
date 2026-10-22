@@ -136,6 +136,7 @@ input:focus-visible,select:focus-visible,button:focus-visible,path:focus-visible
 .tile .k{font-family:var(--font-display); font-size:10.5px; font-weight:600; letter-spacing:var(--track-cap); text-transform:uppercase; color:var(--text-muted)}
 .tile .d{font-size:12px; color:var(--text-2); line-height:1.45; margin-top:2px}
 .tile.lead b{color:var(--accent)}
+.tile b .dc{color:var(--text-muted)}
 
 .macrobar{display:flex; height:34px; border-radius:var(--cut); overflow:hidden; gap:2px}
 .macrobar div{display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700;
@@ -1057,7 +1058,7 @@ footer.foot strong{color:var(--text-2)}
     var diff = Math.abs(e.tdee - e.target);
     html += '<section class="card"><div class="card-hd"><h2>Your numbers</h2>' +
       '<span class="sub">' + GOAL_LABEL[e.goal] + ' · ' + e.method + '</span>' +
-      '<span class="badge free">free</span></div><div class="tiles">' +
+      '<span class="badge free">free</span></div><div class="tiles" id="numTiles">' +
       tile('Resting metabolic rate', fmt(e.bmr), 'kcal', 'What you would burn lying still all day.') +
       tile('Maintenance (TDEE)', fmt(e.tdee), 'kcal', 'Total daily energy expenditure: resting rate × your activity multiplier of ' + s.activity + '.') +
       tile('Daily target', fmt(e.target), 'kcal', diff < 20 ? 'Maintenance. No deficit or surplus.' : fmt(diff) + ' kcal ' + dirWord + ' a day.', true) +
@@ -1234,7 +1235,7 @@ footer.foot strong{color:var(--text-2)}
 
   function tile(k, v, unit, d, lead){
     return '<div class="tile' + (lead ? ' lead' : '') + '"><span class="k">' + k + '</span>' +
-      '<b>' + v + (unit ? ' <small>' + unit + '</small>' : '') + '</b><span class="d">' + d + '</span></div>';
+      '<b><span data-text="' + v + '">' + v + '</span>' + (unit ? ' <small>' + unit + '</small>' : '') + '</b><span class="d">' + d + '</span></div>';
   }
   function macro(col, name, g, pct, note){
     return '<div class="m"><span class="swatch" style="background:' + col + '"></span><span>' +
@@ -1443,10 +1444,37 @@ footer.foot strong{color:var(--text-2)}
     var le = $('leadEmail'); if(le) le.focus({preventScroll:true});
   }
 
+  /* Decode: each number's digits cycle, then lock left to right on the real value.
+     Commas, dots and signs stay put so the width never jumps. Plays only on
+     Build my plan; typing a new answer updates the numbers with no effect. */
+  var REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function decode(el, ms, delay){
+    var final = el.getAttribute('data-text'), n = final.length, start = null;
+    if(REDUCE){ el.textContent = final; return; }
+    function frame(t){
+      if(!el.isConnected) return;
+      if(start === null) start = t + delay;
+      var locked = Math.floor(Math.max(0, (t - start) / ms) * n), out = '';
+      for(var i = 0; i < n; i++){
+        var c = final[i];
+        out += (i < locked || !/[0-9]/.test(c)) ? c : '<span class="dc">' + ((Math.random() * 10) | 0) + '</span>';
+      }
+      el.innerHTML = out;
+      if(locked < n) requestAnimationFrame(frame); else el.textContent = final;
+    }
+    requestAnimationFrame(frame);
+  }
+  function playNumbers(){
+    var box = $('numTiles'); if(!box) return;
+    var parts = box.querySelectorAll('[data-text]');
+    for(var i = 0; i < parts.length; i++) decode(parts[i], 520, i * 110);
+  }
+
   /* ---------- wiring ---------- */
   $('form').addEventListener('submit', function(ev){
     ev.preventDefault();
     render();
+    playNumbers();
     if(window.matchMedia('(max-width:920px)').matches){
       reveal($('plan'), 'start');
     }
