@@ -68,7 +68,9 @@ header.bar{background:var(--surface-1); border-bottom:1px solid var(--border)}
 .intake{position:sticky; top:16px; overflow:hidden}
 @media (max-width:920px){ .intake{position:static} }
 .intake-hd{padding:14px 16px; border-bottom:1px solid var(--border)}
-.intake-hd h2,.card-hd h2{font-size:14px; letter-spacing:var(--track-cap); text-transform:uppercase; color:var(--text-muted)}
+.intake-hd h2,.card-hd h2{font-size:14px; letter-spacing:var(--track-cap); text-transform:uppercase; color:var(--text-1)}
+/* Motherbase's home cards: a bright title with a gold strip down the head's left edge */
+.intake-hd,.card-hd{box-shadow:inset 3px 0 0 var(--accent); border-top-left-radius:calc(var(--cut) - 1px)}
 .intake-body{padding:16px; display:flex; flex-direction:column; gap:22px}
 @media (min-width:921px){ .intake-body{max-height:calc(100vh - 110px); overflow-y:auto} }
 fieldset{border:0; padding:0; margin:0; display:flex; flex-direction:column; gap:12px; min-width:0}
