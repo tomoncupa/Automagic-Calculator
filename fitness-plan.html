@@ -129,8 +129,8 @@ input:focus-visible,select:focus-visible,button:focus-visible,path:focus-visible
 .lock{font-family:var(--font-display); font-size:10.5px; font-weight:600; letter-spacing:var(--track-cap); text-transform:uppercase;
   color:var(--warn); border:1px solid rgba(255,179,71,.4); padding:3px 8px; border-radius:var(--cut); white-space:nowrap}
 .card-bd{padding:18px; display:flex; flex-direction:column; gap:16px}
-.tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(156px,1fr)); gap:1px; background:var(--border)}
-.tile{background:var(--surface-1); padding:16px 18px; display:flex; flex-direction:column; gap:3px}
+.tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(156px,1fr)); gap:1px; background:var(--surface-1)}
+.tile{background:var(--surface-1); box-shadow:0 0 0 1px var(--border); padding:16px 18px; display:flex; flex-direction:column; gap:3px}
 .tile b{font-size:30px; font-weight:600; line-height:1.1}
 .tile b small{font-size:13px; color:var(--text-muted); font-weight:500}
 .tile .k{font-family:var(--font-display); font-size:10.5px; font-weight:600; letter-spacing:var(--track-cap); text-transform:uppercase; color:var(--text-muted)}
@@ -703,6 +703,7 @@ footer.foot strong{color:var(--text-2)}
 
     return {
       bmr:bmr, tdee:tdee, target:target, method:method, goal:goal, rateKg:rateKg,
+      weekly: (target - tdee) * 7 / (target < tdee ? 7700 : 5500),
       bmi:bmi, lbm:lbm, notes:notes, protein:protein, fat:fat, carbs:carbs,
       fibre: r0(target/1000 * 14),
       waterTrain: (s.weightKg*35 + 600)/1000,
@@ -1064,7 +1065,7 @@ footer.foot strong{color:var(--text-2)}
       tile('Daily target', fmt(e.target), 'kcal', diff < 20 ? 'Maintenance. No deficit or surplus.' : fmt(diff) + ' kcal ' + dirWord + ' a day.', true) +
       tile('BMI', r1(e.bmi).toFixed(1), '', 'Body mass index. ' + bmiCat + '. A population screen, blind to muscle.') +
       (e.lbm ? tile('Lean body mass', r1(toDisp(e.lbm, u)).toFixed(1), u, 'From the ' + s.bf + '% body fat you entered.') : '') +
-      (Math.abs(e.rateKg) > 0.01 ? tile('Expected rate', (e.rateKg > 0 ? '−' : '+') + r1(Math.abs(toDisp(e.rateKg, u))).toFixed(2), u + '/wk', 'At the start. It slows as your weight, and your maintenance with it, moves.') : '') +
+      (Math.abs(e.rateKg) > 0.01 ? tile('Expected rate', (e.weekly < 0 ? '−' : '+') + Math.abs(toDisp(e.weekly, u)).toFixed(2), u + '/wk', 'At the start. It slows as your weight, and your maintenance with it, moves.') : '') +
       '</div></section>';
 
     /* --- FREE: nutrition --- */
@@ -1367,7 +1368,7 @@ footer.foot strong{color:var(--text-2)}
     L.push('  Resting metabolic rate : ' + fmt(e.bmr) + ' kcal');
     L.push('  Maintenance (TDEE)     : ' + fmt(e.tdee) + ' kcal');
     L.push('  Daily target           : ' + fmt(e.target) + ' kcal');
-    if(Math.abs(e.rateKg) > 0.01) L.push('  Expected rate          : ' + (e.rateKg > 0 ? '-' : '+') + r1(Math.abs(toDisp(e.rateKg, u))) + ' ' + u + '/week');
+    if(Math.abs(e.rateKg) > 0.01) L.push('  Expected rate          : ' + (e.weekly < 0 ? '-' : '+') + Math.abs(toDisp(e.weekly, u)).toFixed(2) + ' ' + u + '/week');
     L.push('');
     L.push('MACROS');
     L.push('  Protein : ' + e.protein + ' g');
